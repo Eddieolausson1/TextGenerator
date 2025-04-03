@@ -96,6 +96,8 @@ export default function TextGenerator() {
     "Hennes syster",
     "Hans bror",
     "Vår chef",
+    "Varför",
+    "När",
   ]
 
   const verbs = [
