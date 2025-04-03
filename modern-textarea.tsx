@@ -48,6 +48,8 @@ export default function TextGenerator() {
   const [successMessage, setSuccessMessage] = useState("");
   const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null);
   const [animateFavorite, setAnimateFavorite] = useState<string | null>(null);
+  const [contextBuffer, setContextBuffer] = useState<string[]>([]);
+  const [currentTopic, setCurrentTopic] = useState<string | null>(null);
 
   // Svenska ordlistor för meningsgenerering
   const subjects = [
@@ -94,6 +96,15 @@ export default function TextGenerator() {
     "Lagom är bäst", "Det ordnar sig alltid",
   ];
 
+  const topics = [
+    "Väder",
+    "Mat",
+    "Resor",
+    "Teknik",
+    "Historia",
+    "Natur",
+  ];
+
   // Funktion för att generera unikt ID
   const generateId = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
@@ -111,6 +122,16 @@ export default function TextGenerator() {
   // Funktion för att slumpa fram ett element från en array
   const getRandomElement = (array: string[]) => {
     return array[Math.floor(Math.random() * array.length)];
+  };
+
+  const analyzeContext = (sentence: string) => {
+    // Enkel analys av nyckelord och ämnen (kan utökas)
+    for (const topic of topics) {
+      if (sentence.toLowerCase().includes(topic.toLowerCase())) {
+        setCurrentTopic(topic);
+        break;
+      }
+    }
   };
 
   // Funktion för att generera en slumpmässig svensk mening med förbättrad ordval
@@ -154,6 +175,19 @@ export default function TextGenerator() {
     ];
 
     let sentence = sentenceTypes[Math.floor(Math.random() * sentenceTypes.length)]();
+
+    // Anpassa ordval efter aktuellt ämne
+    if (currentTopic) {
+      // Lägg till logik för att välja ord relaterade till ämnet
+      // Exempel:
+      if (currentTopic === "Mat") {
+        const foodVerbs = ["äter", "lagar", "smakar", "bakar"];
+        sentence = sentence.replace(getRandomElement(verbs), getRandomElement(foodVerbs));
+        const foodObjects = ["pizza", "pasta", "sallad", "soppa"];
+        sentence = sentence.replace(getRandomElement(objects), getRandomElement(foodObjects));
+      }
+      // Lägg till fler ämnen och ordanpassningar här
+    }
 
     // Enkel kontroll av ord (kan utökas med mer avancerad logik)
     const words = sentence.split(" ");
@@ -235,6 +269,9 @@ export default function TextGenerator() {
       saveData("totalGenerated", newTotal);
       saveData("history", newHistory);
       saveData("favorites", favorites);
+
+      analyzeContext(newText);
+      setContextBuffer([...contextBuffer, newText]);
 
       // Visa success-meddelande
       showSuccessMessage("Text genererad!");
