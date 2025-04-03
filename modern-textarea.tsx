@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   RefreshCw,
   Copy,
@@ -20,295 +20,98 @@ import {
   Clock,
   Trash2,
   RotateCcw,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-
-// Cookie-hanteringsfunktioner
-const setCookie = (name: string, value: string, days = 365) => {
-  const expires = new Date()
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000)
-  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Strict`
-}
-
-const getCookie = (name: string): string | null => {
-  if (typeof document === "undefined") return null
-
-  const cookies = document.cookie.split(";")
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim()
-    if (cookie.startsWith(name + "=")) {
-      return decodeURIComponent(cookie.substring(name.length + 1))
-    }
-  }
-  return null
-}
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Historik-objekt med tidsstämpel
 interface HistoryItem {
-  text: string
-  timestamp: number
-  id: string // Unikt ID för animationsnycklar
+  text: string;
+  timestamp: number;
+  id: string; // Unikt ID för animationsnycklar
 }
 
 // Maxantal historikposter
-const MAX_HISTORY_ITEMS = 30
+const MAX_HISTORY_ITEMS = 30;
 
 export default function TextGenerator() {
-  const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening")
-  const [sentenceCount, setSentenceCount] = useState(2)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [isCopied, setIsCopied] = useState(false)
-  const [totalGenerated, setTotalGenerated] = useState(0)
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [isFavorite, setIsFavorite] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [activeTab, setActiveTab] = useState("generator")
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null)
-  const [animateFavorite, setAnimateFavorite] = useState<string | null>(null)
+  const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening");
+  const [sentenceCount, setSentenceCount] = useState(2);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [totalGenerated, setTotalGenerated] = useState(0);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState("generator");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null);
+  const [animateFavorite, setAnimateFavorite] = useState<string | null>(null);
 
   // Svenska ordlistor för meningsgenerering
   const subjects = [
-    "Jag",
-    "Du",
-    "Han",
-    "Hon",
-    "Vi",
-    "Ni",
-    "De",
-    "Barnet",
-    "Läraren",
-    "Hunden",
-    "Katten",
-    "Fågeln",
-    "Mannen",
-    "Kvinnan",
-    "Eleven",
-    "Programmeraren",
-    "Konstnären",
-    "Musikern",
-    "Läkaren",
-    "Kocken",
-    "Min granne",
-    "Deras vän",
-    "Hennes syster",
-    "Hans bror",
-    "Vår chef",
-    "Varför",
-    "När",
-  ]
+    "Jag", "Du", "Han", "Hon", "Vi", "Ni", "De", "Barnet", "Läraren", "Hunden", "Katten", "Fågeln", "Mannen", "Kvinnan", "Eleven",
+    "Programmeraren", "Konstnären", "Musikern", "Läkaren", "Kocken", "Min granne", "Deras vän", "Hennes syster", "Hans bror", "Vår chef", "Varför", "När",
+  ];
 
   const verbs = [
-    "gillar",
-    "älskar",
-    "hatar",
-    "ser",
-    "hör",
-    "känner",
-    "äter",
-    "dricker",
-    "springer",
-    "går",
-    "sover",
-    "arbetar",
-    "studerar",
-    "läser",
-    "skriver",
-    "sjunger",
-    "dansar",
-    "lagar",
-    "köper",
-    "säljer",
-    "tänker på",
-    "pratar om",
-    "längtar efter",
-    "drömmer om",
-    "funderar på",
-    "skrattar åt",
-    "gråter över",
-  ]
+    "gillar", "älskar", "hatar", "ser", "hör", "känner", "äter", "dricker", "springer", "går", "sover", "arbetar", "studerar", "läser", "skriver",
+    "sjunger", "dansar", "lagar", "köper", "säljer", "tänker på", "pratar om", "längtar efter", "drömmer om", "funderar på", "skrattar åt", "gråter över",
+  ];
 
   const objects = [
-    "mat",
-    "musik",
-    "böcker",
-    "filmer",
-    "datorer",
-    "telefoner",
-    "bilar",
-    "blommor",
-    "djur",
-    "kläder",
-    "skor",
-    "konst",
-    "sport",
-    "spel",
-    "kaffe",
-    "te",
-    "vatten",
-    "choklad",
-    "glass",
-    "frukt",
-    "nyheter",
-    "politik",
-    "vetenskap",
-    "historia",
-    "framtiden",
-    "minnen",
-    "drömmar",
-  ]
+    "mat", "musik", "böcker", "filmer", "datorer", "telefoner", "bilar", "blommor", "djur", "kläder", "skor", "konst", "sport", "spel", "kaffe", "te",
+    "vatten", "choklad", "glass", "frukt", "nyheter", "politik", "vetenskap", "historia", "framtiden", "minnen", "drömmar",
+  ];
 
   const places = [
-    "i parken",
-    "i skolan",
-    "på jobbet",
-    "hemma",
-    "i affären",
-    "på restaurangen",
-    "på biblioteket",
-    "på stranden",
-    "i skogen",
-    "på gatan",
-    "på torget",
-    "i trädgården",
-    "på sjukhuset",
-    "på museet",
-    "på bio",
-    "i köket",
-    "i Stockholm",
-    "i Göteborg",
-    "på landet",
-    "vid sjön",
-    "i bergen",
-    "utomlands",
-  ]
+    "i parken", "i skolan", "på jobbet", "hemma", "i affären", "på restaurangen", "på biblioteket", "på stranden", "i skogen", "på gatan", "på torget",
+    "i trädgården", "på sjukhuset", "på museet", "på bio", "i köket", "i Stockholm", "i Göteborg", "på landet", "vid sjön", "i bergen", "utomlands",
+  ];
 
   const times = [
-    "på morgonen",
-    "på eftermiddagen",
-    "på kvällen",
-    "på natten",
-    "på helgen",
-    "på vardagar",
-    "på sommaren",
-    "på vintern",
-    "på hösten",
-    "på våren",
-    "varje dag",
-    "ibland",
-    "ofta",
-    "sällan",
-    "alltid",
-    "aldrig",
-    "förra veckan",
-    "nästa månad",
-    "för länge sedan",
-    "i framtiden",
-    "just nu",
-    "för ett ögonblick sedan",
-  ]
+    "på morgonen", "på eftermiddagen", "på kvällen", "på natten", "på helgen", "på vardagar", "på sommaren", "på vintern", "på hösten", "på våren",
+    "varje dag", "ibland", "ofta", "sällan", "alltid", "aldrig", "förra veckan", "nästa månad", "för länge sedan", "i framtiden", "just nu", "för ett ögonblick sedan",
+  ];
 
   const adjectives = [
-    "glad",
-    "ledsen",
-    "arg",
-    "trött",
-    "pigg",
-    "hungrig",
-    "törstig",
-    "vacker",
-    "ful",
-    "stor",
-    "liten",
-    "snabb",
-    "långsam",
-    "stark",
-    "svag",
-    "varm",
-    "kall",
-    "ny",
-    "gammal",
-    "intressant",
-    "tråkig",
-    "spännande",
-    "lugn",
-    "stressad",
-    "lycklig",
-    "orolig",
-    "förvånad",
-  ]
+    "glad", "ledsen", "arg", "trött", "pigg", "hungrig", "törstig", "vacker", "ful", "stor", "liten", "snabb", "långsam", "stark", "svag", "varm", "kall",
+    "ny", "gammal", "intressant", "tråkig", "spännande", "lugn", "stressad", "lycklig", "orolig", "förvånad",
+  ];
 
   const adverbs = [
-    "snabbt",
-    "långsamt",
-    "försiktigt",
-    "högljutt",
-    "tyst",
-    "glatt",
-    "sorgset",
-    "argt",
-    "ivrigt",
-    "lugnt",
-    "plötsligt",
-    "gradvis",
-    "verkligen",
-    "knappt",
-    "nästan",
-    "helt",
-    "delvis",
-    "särskilt",
-  ]
+    "snabbt", "långsamt", "försiktigt", "högljutt", "tyst", "glatt", "sorgset", "argt", "ivrigt", "lugnt", "plötsligt", "gradvis", "verkligen", "knappt",
+    "nästan", "helt", "delvis", "särskilt",
+  ];
 
   const conjunctions = [
-    "och",
-    "men",
-    "eller",
-    "för",
-    "så",
-    "eftersom",
-    "därför att",
-    "om",
-    "när",
-    "medan",
-    "fastän",
-    "trots att",
-    "innan",
-    "efter att",
-  ]
+    "och", "men", "eller", "för", "så", "eftersom", "därför att", "om", "när", "medan", "fastän", "trots att", "innan", "efter att",
+  ];
 
   const expressions = [
-    "Det spelar ingen roll",
-    "Tänk om",
-    "Oj, vad tiden går",
-    "Det var en gång",
-    "Tro det eller ej",
-    "Som tur är",
-    "Det är aldrig för sent",
-    "Bättre sent än aldrig",
-    "Lagom är bäst",
-    "Det ordnar sig alltid",
-  ]
+    "Det spelar ingen roll", "Tänk om", "Oj, vad tiden går", "Det var en gång", "Tro det eller ej", "Som tur är", "Det är aldrig för sent", "Bättre sent än aldrig",
+    "Lagom är bäst", "Det ordnar sig alltid",
+  ];
 
   // Funktion för att generera unikt ID
   const generateId = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2)
-  }
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
 
   // Funktion för att visa success-meddelande
   const showSuccessMessage = (message: string) => {
-    setSuccessMessage(message)
-    setShowSuccess(true)
+    setSuccessMessage(message);
+    setShowSuccess(true);
     setTimeout(() => {
-      setShowSuccess(false)
-    }, 2000)
-  }
+      setShowSuccess(false);
+    }, 2000);
+  };
 
   // Funktion för att slumpa fram ett element från en array
   const getRandomElement = (array: string[]) => {
-    return array[Math.floor(Math.random() * array.length)]
-  }
+    return array[Math.floor(Math.random() * array.length)];
+  };
 
   // Funktion för att generera en slumpmässig svensk mening
   const generateRandomSentence = () => {
@@ -318,204 +121,210 @@ export default function TextGenerator() {
       () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
 
       // Med plats: Subjekt + Verb + Objekt + Plats
-      () =>
-        `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(places)}.`,
+      () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(places)}.`,
 
       // Med tid: Subjekt + Verb + Objekt + Tid
-      () =>
-        `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(times)}.`,
+      () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(times)}.`,
 
       // Med adjektiv: Subjekt + är + Adjektiv
       () => `${getRandomElement(subjects)} är ${getRandomElement(adjectives)}.`,
 
       // Komplex: Subjekt + Verb + Objekt + Plats + Tid
-      () =>
-        `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(places)} ${getRandomElement(times)}.`,
+      () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)} ${getRandomElement(places)} ${getRandomElement(times)}.`,
 
       // Fråga: Verb + Subjekt + Objekt?
-      () =>
-        `${getRandomElement(verbs).charAt(0).toUpperCase() + getRandomElement(verbs).slice(1)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(objects)}?`,
+      () => `${getRandomElement(verbs).charAt(0).toUpperCase() + getRandomElement(verbs).slice(1)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(objects)}?`,
 
       // Negation: Subjekt + Verb + inte + Objekt
       () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} inte ${getRandomElement(objects)}.`,
 
       // Med adverb: Subjekt + Verb + Adverb + Objekt
-      () =>
-        `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(adverbs)} ${getRandomElement(objects)}.`,
+      () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(adverbs)} ${getRandomElement(objects)}.`,
 
       // Sammansatt mening med konjunktion
-      () =>
-        `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)}, ${getRandomElement(conjunctions)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
+      () => `${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)}, ${getRandomElement(conjunctions)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
 
       // Uttryck + enkel mening
-      () =>
-        `${getRandomElement(expressions)}! ${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
+      () => `${getRandomElement(expressions)}! ${getRandomElement(subjects)} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
 
       // Adjektiv + subjekt + verb + objekt
-      () =>
-        `${getRandomElement(adjectives).charAt(0).toUpperCase() + getRandomElement(adjectives).slice(1)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
+      () => `${getRandomElement(adjectives).charAt(0).toUpperCase() + getRandomElement(adjectives).slice(1)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
 
       // Tid + verb + subjekt + objekt
-      () =>
-        `${getRandomElement(times).charAt(0).toUpperCase() + getRandomElement(times).slice(1)} ${getRandomElement(verbs)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(objects)}.`,
-    ]
+      () => `${getRandomElement(times).charAt(0).toUpperCase() + getRandomElement(times).slice(1)} ${getRandomElement(verbs)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(objects)}.`,
+    ];
 
     // Välj en slumpmässig meningsstruktur och generera en mening
-    return sentenceTypes[Math.floor(Math.random() * sentenceTypes.length)]()
-  }
+    return sentenceTypes[Math.floor(Math.random() * sentenceTypes.length)]();
+  };
 
   // Funktion för att formatera datum
   const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp)
+    const date = new Date(timestamp);
     return date.toLocaleString("sv-SE", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
+
+  // Funktion för att spara data till localStorage
+  const saveData = (key: string, data: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error("Fel vid sparande av data:", error);
+    }
+  };
+
+  // Funktion för att hämta data från localStorage
+  const loadData = (key: string) => {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error("Fel vid laddning av data:", error);
+      return null;
+    }
+  };
 
   // Funktion för att generera flera meningar
   const generateText = () => {
-    setIsGenerating(true)
+    setIsGenerating(true);
 
     // Simulera en kort laddningstid för bättre UX
     setTimeout(() => {
-      let text = ""
+      let text = "";
 
       for (let i = 0; i < sentenceCount; i++) {
-        text += generateRandomSentence() + " "
+        text += generateRandomSentence() + " ";
       }
 
-      const newText = text.trim()
-      const newTotal = totalGenerated + 1
-      const newItemId = generateId()
+      const newText = text.trim();
+      const newTotal = totalGenerated + 1;
+      const newItemId = generateId();
 
       // Skapa ny historikpost
       const newHistoryItem: HistoryItem = {
         text: newText,
         timestamp: Date.now(),
         id: newItemId,
-      }
+      };
 
       // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
-      const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
+      const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS);
 
-      setGeneratedText(newText)
-      setTotalGenerated(newTotal)
-      setHistory(newHistory)
-      setIsFavorite(favorites.includes(newText))
-      setIsGenerating(false)
+      setGeneratedText(newText);
+      setTotalGenerated(newTotal);
+      setHistory(newHistory);
+      setIsFavorite(favorites.includes(newText));
+      setIsGenerating(false);
 
       // Animera den nya historikposten
-      setAnimateHistoryItem(newItemId)
-      setTimeout(() => setAnimateHistoryItem(null), 1000)
+      setAnimateHistoryItem(newItemId);
+      setTimeout(() => setAnimateHistoryItem(null), 1000);
 
-      // Spara i cookies
-      setCookie("totalGenerated", newTotal.toString())
-      setCookie("history", JSON.stringify(newHistory))
+      // Spara i localStorage
+      saveData("totalGenerated", newTotal);
+      saveData("history", newHistory);
+      saveData("favorites", favorites);
 
       // Visa success-meddelande
-      showSuccessMessage("Text genererad!")
-    }, 500)
-  }
+      showSuccessMessage("Text genererad!");
+    }, 500);
+  };
 
   // Funktion för att kopiera texten
   const copyText = () => {
-    navigator.clipboard.writeText(generatedText)
-    setIsCopied(true)
+    navigator.clipboard.writeText(generatedText);
+    setIsCopied(true);
 
     setTimeout(() => {
-      setIsCopied(false)
-    }, 2000)
+      setIsCopied(false);
+    }, 2000);
 
     // Visa success-meddelande
-    showSuccessMessage("Kopierad till urklipp!")
-  }
+    showSuccessMessage("Kopierad till urklipp!");
+  };
 
   // Funktion för att spara/ta bort favorit
   const toggleFavorite = () => {
-    let newFavorites: string[]
+    let newFavorites: string[];
 
     if (isFavorite) {
-      newFavorites = favorites.filter((fav) => fav !== generatedText)
-      setFavorites(newFavorites)
-      setIsFavorite(false)
-      showSuccessMessage("Borttagen från favoriter")
+      newFavorites = favorites.filter((fav) => fav !== generatedText);
+      setFavorites(newFavorites);
+      setIsFavorite(false);
+      showSuccessMessage("Borttagen från favoriter");
     } else {
-      newFavorites = [...favorites, generatedText]
-      setFavorites(newFavorites)
-      setIsFavorite(true)
+      newFavorites = [...favorites, generatedText];
+      setFavorites(newFavorites);
+      setIsFavorite(true);
 
       // Animera den nya favoriten
-      setAnimateFavorite(generatedText)
-      setTimeout(() => setAnimateFavorite(null), 1000)
+      setAnimateFavorite(generatedText);
+      setTimeout(() => setAnimateFavorite(null), 1000);
 
-      showSuccessMessage("Sparad som favorit!")
+      showSuccessMessage("Sparad som favorit!");
     }
 
-    // Spara favoriter i cookie
-    setCookie("favorites", JSON.stringify(newFavorites))
-  }
+    // Spara favoriter i localStorage
+    saveData("favorites", newFavorites);
+  };
 
   // Funktion för att rensa historik
   const clearHistory = () => {
     if (confirm("Är du säker på att du vill rensa hela historiken?")) {
-      setHistory([])
-      setCookie("history", JSON.stringify([]))
-      showSuccessMessage("Historiken har rensats")
+      setHistory([]);
+      saveData("history", []);
+      showSuccessMessage("Historiken har rensats");
     }
-  }
+  };
 
-  // Ladda data från cookies när komponenten monteras
+  // Ladda data från localStorage när komponenten monteras
   useEffect(() => {
     if (typeof window !== "undefined" && !isLoaded) {
       // Ladda favoriter
-      const savedFavorites = getCookie("favorites")
-      if (savedFavorites) {
-        try {
-          const parsedFavorites = JSON.parse(savedFavorites)
-          if (Array.isArray(parsedFavorites)) {
-            setFavorites(parsedFavorites)
-            setIsFavorite(parsedFavorites.includes(generatedText))
-          }
-        } catch (e) {
-          console.error("Kunde inte tolka sparade favoriter:", e)
-        }
+      const savedFavorites = loadData("favorites");
+      if (savedFavorites && Array.isArray(savedFavorites)) {
+        setFavorites(savedFavorites);
+        setIsFavorite(savedFavorites.includes(generatedText));
       }
 
       // Ladda historik
-      const savedHistory = getCookie("history")
-      if (savedHistory) {
-        try {
-          const parsedHistory = JSON.parse(savedHistory)
-          if (Array.isArray(parsedHistory)) {
-            // Lägg till ID om det saknas (för äldre data)
-            const historyWithIds = parsedHistory.map((item) => ({
-              ...item,
-              id: item.id || generateId(),
-            }))
-            setHistory(historyWithIds)
-          }
-        } catch (e) {
-          console.error("Kunde inte tolka sparad historik:", e)
-        }
+      const savedHistory = loadData("history");
+      if (savedHistory && Array.isArray(savedHistory)) {
+        // Lägg till ID om det saknas (för äldre data)
+        const historyWithIds = savedHistory.map((item) => ({
+          ...item,
+          id: item.id || generateId(),
+        }));
+        setHistory(historyWithIds);
       }
 
       // Ladda antal genererade
-      const savedTotal = getCookie("totalGenerated")
+      const savedTotal = loadData("totalGenerated");
       if (savedTotal && !isNaN(Number(savedTotal))) {
-        setTotalGenerated(Number(savedTotal))
+        setTotalGenerated(Number(savedTotal));
       }
 
-      setIsLoaded(true)
+      setIsLoaded(true);
     }
-  }, [generatedText, isLoaded])
+  }, [generatedText, isLoaded]);
 
   // Kontrollera om den aktuella texten är en favorit när texten ändras
   useEffect(() => {
-    setIsFavorite(favorites.includes(generatedText))
-  }, [generatedText, favorites])
+    setIsFavorite(favorites.includes(generatedText));
+  }, [generatedText, favorites]);
+
+  //Enskild radera funktion för historik
+  const deleteHistoryItem = (id:string) => {
+    const newHistory = history.filter(item => item.id !== id)
+    setHistory(newHistory);
+    saveData("history", newHistory);
+    showSuccessMessage("Historik post raderad.");
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full p-4 bg-gradient-to-b from-background to-muted/30">
@@ -526,10 +335,7 @@ export default function TextGenerator() {
               <CardTitle className="text-xl font-medium">Meningsgenerator</CardTitle>
               <CardDescription>Genererar slumpmässiga svenska meningar</CardDescription>
             </div>
-            <Badge
-              variant="outline"
-              className="ml-2 flex items-center gap-1 transition-all duration-300 hover:scale-105"
-            >
+            <Badge variant="outline" className="ml-2 flex items-center gap-1 transition-all duration-300 hover:scale-105">
               <Save className="h-3 w-3" />
               <span className="counter">{totalGenerated}</span> genererade
             </Badge>
@@ -539,7 +345,7 @@ export default function TextGenerator() {
           <div
             className={cn(
               "absolute top-0 left-0 right-0 bg-green-500/90 text-white text-center py-1 text-sm font-medium transition-transform duration-300 ease-in-out",
-              showSuccess ? "translate-y-0" : "-translate-y-full",
+              showSuccess ? "translate-y-0" : "-translate-y-full"
             )}
           >
             {successMessage}
@@ -549,17 +355,11 @@ export default function TextGenerator() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-6">
             <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger
-                value="generator"
-                className="flex items-center gap-1 transition-all duration-200 data-[state=active]:scale-105"
-              >
+              <TabsTrigger value="generator" className="flex items-center gap-1 transition-all duration-200 data-[state=active]:scale-105">
                 <Sparkles className="h-3.5 w-3.5" />
                 Generator
               </TabsTrigger>
-              <TabsTrigger
-                value="history"
-                className="flex items-center gap-1 transition-all duration-200 data-[state=active]:scale-105"
-              >
+              <TabsTrigger value="history" className="flex items-center gap-1 transition-all duration-200 data-[state=active]:scale-105">
                 <History className="h-3.5 w-3.5" />
                 Historik
                 {history.length > 0 && (
@@ -571,10 +371,7 @@ export default function TextGenerator() {
             </TabsList>
           </div>
 
-          <TabsContent
-            value="generator"
-            className="mt-0 transition-all duration-300 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-50 data-[state=active]:fade-in-50"
-          >
+          <TabsContent value="generator" className="mt-0 transition-all duration-300 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-50 data-[state=active]:fade-in-50">
             <CardContent className="space-y-6 pt-4">
               <div className="grid w-full gap-2">
                 <Label htmlFor="generatedText">Genererad text</Label>
@@ -587,7 +384,7 @@ export default function TextGenerator() {
                     className={cn(
                       "min-h-32 resize-none border-2 rounded-md focus:ring-2 focus:ring-offset-1 pr-10 transition-all duration-300",
                       isGenerating && "opacity-50",
-                      !isGenerating && "animate-in fade-in-50 duration-300",
+                      !isGenerating && "animate-in fade-in-50 duration-300"
                     )}
                   />
                   {isGenerating && (
@@ -605,16 +402,12 @@ export default function TextGenerator() {
                       onClick={copyText}
                       className={cn(
                         "h-8 w-8 transition-all duration-200 hover:scale-110",
-                        isCopied && "bg-green-500/20 text-green-600",
+                        isCopied && "bg-green-500/20 text-green-600"
                       )}
                       disabled={isGenerating}
                       title={isCopied ? "Kopierad!" : "Kopiera text"}
                     >
-                      {isCopied ? (
-                        <Check className="h-4 w-4 animate-in zoom-in-50 duration-300" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
+                      {isCopied ? <Check className="h-4 w-4 animate-in zoom-in-50 duration-300" /> : <Copy className="h-4 w-4" />}
                     </Button>
                     <Button
                       size="icon"
@@ -622,16 +415,12 @@ export default function TextGenerator() {
                       onClick={toggleFavorite}
                       className={cn(
                         "h-8 w-8 transition-all duration-200 hover:scale-110",
-                        isFavorite && "text-amber-500",
+                        isFavorite && "text-amber-500"
                       )}
                       disabled={isGenerating}
                       title={isFavorite ? "Ta bort från favoriter" : "Spara som favorit"}
                     >
-                      {isFavorite ? (
-                        <BookmarkCheck className="h-4 w-4 animate-in zoom-in-50 duration-300" />
-                      ) : (
-                        <Bookmark className="h-4 w-4" />
-                      )}
+                      {isFavorite ? <BookmarkCheck className="h-4 w-4 animate-in zoom-in-50 duration-300" /> : <Bookmark className="h-4 w-4" />}
                     </Button>
                   </div>
                 </div>
@@ -669,7 +458,7 @@ export default function TextGenerator() {
                           key={index}
                           className={cn(
                             "text-xs p-2 bg-muted rounded-md cursor-pointer hover:bg-muted/80 transition-all duration-200 hover:translate-x-1 hover:shadow-sm",
-                            animateFavorite === fav && "animate-pulse bg-amber-100 dark:bg-amber-900/30",
+                            animateFavorite === fav && "animate-pulse bg-amber-100 dark:bg-amber-900/30"
                           )}
                           onClick={() => setGeneratedText(fav)}
                         >
@@ -687,7 +476,7 @@ export default function TextGenerator() {
                 onClick={generateText}
                 className={cn(
                   "w-full flex items-center gap-2 transition-all duration-300",
-                  !isGenerating && "hover:scale-[1.02] hover:shadow-md",
+                  !isGenerating && "hover:scale-[1.02] hover:shadow-md"
                 )}
                 disabled={isGenerating}
                 variant="default"
@@ -698,10 +487,7 @@ export default function TextGenerator() {
             </CardFooter>
           </TabsContent>
 
-          <TabsContent
-            value="history"
-            className="mt-0 transition-all duration-300 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-50 data-[state=active]:fade-in-50"
-          >
+          <TabsContent value="history" className="mt-0 transition-all duration-300 data-[state=active]:animate-in data-[state=inactive]:animate-out data-[state=inactive]:fade-out-50 data-[state=active]:fade-in-50">
             <CardContent className="pt-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1 text-sm font-medium">
@@ -738,7 +524,7 @@ export default function TextGenerator() {
                       className={cn(
                         "text-sm p-3 bg-muted rounded-md transition-all duration-300",
                         "hover:bg-muted/80 hover:translate-x-1 hover:shadow-sm",
-                        animateHistoryItem === item.id && "animate-in slide-in-from-left-5 duration-500 bg-primary/10",
+                        animateHistoryItem === item.id && "animate-in slide-in-from-left-5 duration-500 bg-primary/10"
                       )}
                     >
                       <div className="flex justify-between items-start mb-1">
@@ -759,13 +545,22 @@ export default function TextGenerator() {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              setGeneratedText(item.text)
-                              setActiveTab("generator")
+                              setGeneratedText(item.text);
+                              setActiveTab("generator");
                             }}
                             className="h-6 w-6 transition-all duration-200 hover:scale-110 hover:bg-primary/10"
                             title="Visa i generator"
                           >
                             <Sparkles className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={()=> deleteHistoryItem(item.id)}
+                            className = "h-6 w-6 transition-all duration-200 hover:scale-110 hover:bg-destructive/10"
+                            title="Radera"
+                          >
+                            <Trash2 className="h-3 w-3 text-destructive" />
                           </Button>
                         </div>
                       </div>
@@ -779,8 +574,8 @@ export default function TextGenerator() {
             <CardFooter>
               <Button
                 onClick={() => {
-                  setActiveTab("generator")
-                  generateText()
+                  setActiveTab("generator");
+                  generateText();
                 }}
                 className="w-full flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
                 disabled={isGenerating}
@@ -796,29 +591,34 @@ export default function TextGenerator() {
         {/* CSS för animationer */}
         <style jsx global>{`
           @keyframes pulse-border {
-            0%, 100% { border-color: hsl(var(--primary)); }
-            50% { border-color: hsl(var(--primary) / 0.3); }
+            0%,
+            100% {
+              border-color: hsl(var(--primary));
+            }
+            50% {
+              border-color: hsl(var(--primary) / 0.3);
+            }
           }
-          
+
           .counter {
             display: inline-block;
             transition: transform 0.3s ease;
           }
-          
+
           .counter:hover {
             transform: scale(1.2);
           }
-          
+
           /* Animera textarean när ny text genereras */
           textarea:not(:disabled) {
             transition: all 0.3s ease;
           }
-          
+
           /* Animera knappar */
           button {
             transition: all 0.2s ease;
           }
-          
+
           /* Animera flikar */
           [data-state="active"] {
             transition: all 0.3s ease;
@@ -826,6 +626,5 @@ export default function TextGenerator() {
         `}</style>
       </Card>
     </div>
-  )
+  );
 }
-
