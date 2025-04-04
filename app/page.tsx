@@ -198,6 +198,13 @@ export default function GeneratorPage() {
                     <Type className="h-4 w-4 mr-2" />
                     Titelgenerator
                   </TabsTrigger>
+                                    <TabsTrigger
+                    value="closing"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+                  >
+                    <Type className="h-4 w-4 mr-2" />
+                    Avslutningsfras Generator
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -213,6 +220,14 @@ export default function GeneratorPage() {
                 <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
                   <div className="bg-slate-900 rounded-xl p-1">
                     <TitleGenerator />
+                  </div>
+                </div>
+              </TabsContent>
+
+                            <TabsContent value="closing" className="mt-6">
+                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+                  <div className="bg-slate-900 rounded-xl p-1">
+                    <TextGenerator />
                   </div>
                 </div>
               </TabsContent>
