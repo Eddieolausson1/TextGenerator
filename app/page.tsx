@@ -86,7 +86,7 @@ export default function GeneratorPage() {
             variants={fadeIn}
             className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
           >
-            Svenska Meningsgeneratorn
+            Svenska Textgeneratorn
           </motion.h1>
 
           <motion.p
@@ -171,7 +171,7 @@ export default function GeneratorPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
               Generera text
             </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska meningar med bara ett klick!</p>
+            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska texter med bara ett klick!</p>
           </motion.div>
 
           <motion.div
@@ -189,7 +189,7 @@ export default function GeneratorPage() {
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Meningsgenerator
+                    Textgeneratorn
                   </TabsTrigger>
                   <TabsTrigger
                     value="titles"
@@ -238,10 +238,10 @@ export default function GeneratorPage() {
               Funktioner
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-              Vad är Meningsgeneratorn?
+              Vad är Textgeneratorn?
             </h2>
             <p className="text-slate-300 max-w-2xl mx-auto">
-              En kreativ textgenerator som skapar slumpmässiga svenska meningar för att inspirera till dikter,
+              En kreativ textgenerator som skapar slumpmässiga svenska texter för att inspirera till dikter,
               berättelser och andra kreativa texter
             </p>
           </motion.div>
@@ -256,7 +256,7 @@ export default function GeneratorPage() {
             <FeatureCard
               icon={<Sparkles className="h-10 w-10 text-cyan-400" />}
               title="Intelligent ordåteranvändning"
-              description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande meningar för att skapa mer sammanhängande text."
+              description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande texter för att skapa mer sammanhängande text."
             />
 
             <FeatureCard
@@ -286,7 +286,7 @@ export default function GeneratorPage() {
             <FeatureCard
               icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
               title="Anpassningsbar"
-              description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
+              description="Välj antal texter och se hur generatorn skapar sammanhängande text med återanvända ord."
             />
           </motion.div>
 
@@ -318,7 +318,7 @@ export default function GeneratorPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                Svenska Meningsgeneratorn
+                Svenska Textgeneratorn
               </h3>
               <p className="text-slate-400 mt-2">Slumpmässig textgenerering för kreativ inspiration</p>
             </div>
@@ -340,7 +340,7 @@ export default function GeneratorPage() {
           </div>
 
           <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-slate-400">
-            <p>© {new Date().getFullYear()} Svenska Meningsgeneratorn. Alla rättigheter förbehållna.</p>
+            <p>© {new Date().getFullYear()} Svenska Textgeneratorn. Alla rättigheter förbehållna.</p>
           </div>
         </div>
       </footer>
