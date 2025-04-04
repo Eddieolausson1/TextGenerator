@@ -7,9 +7,9 @@ const PuterAi: React.FC = () => {
     script.async = true;
     document.body.appendChild(script);
 
+    // Cleanup the script when component unmounts
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
-
-  export default PuterAi;
+  }, []); // Closing the useEffect hook properly
+};
