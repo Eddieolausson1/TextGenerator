@@ -86,7 +86,7 @@ export default function GeneratorPage() {
             variants={fadeIn}
             className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
           >
-            Svenska Meningsgeneratorn
+            Svenska Textgeneratorn
           </motion.h1>
 
           <motion.p
@@ -95,7 +95,7 @@ export default function GeneratorPage() {
             variants={fadeIn}
             className="text-xl md:text-2xl text-slate-300 max-w-2xl mb-10"
           >
-            Skapa sammanhängande text med slumpmässig generering för inspiration till dikter och kreativt skrivande
+            Skapa slumpmässiga texter!
           </motion.p>
 
           <motion.div initial="hidden" animate="visible" variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
