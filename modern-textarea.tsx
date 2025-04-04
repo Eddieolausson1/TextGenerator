@@ -1,61 +1,6 @@
 "use client"
 
 import { CardFooter } from "@/components/ui/card"
-
-import { useState, useEffect } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  RefreshCw,
-  Copy,
-  Check,
-  Bookmark,
-  BookmarkCheck,
-  Sparkles,
-  Save,
-  History,
-  Clock,
-  Trash2,
-  RotateCcw,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-
-"use client"
-
-import { CardFooter } from "@/components/ui/card"
-import { useState, useEffect } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  RefreshCw,
-  Copy,
-  Check,
-  Bookmark,
-  BookmarkCheck,
-  Sparkles,
-  Save,
-  History,
-  Clock,
-  Trash2,
-  RotateCcw,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-Certainly! Let's integrate the puter library dynamically into your React application and ensure everything works smoothly. Here's the full code with the necessary modifications:
-
-
-"use client"
-
-import { CardFooter } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -129,6 +74,7 @@ const loadPuterScript = () => {
     document.body.appendChild(script);
   });
 };
+
 export default function TextGenerator() {
   const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening")
   const [sentenceCount, setSentenceCount] = useState(2)
