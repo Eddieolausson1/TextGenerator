@@ -12,4 +12,4 @@ const PuterAi: React.FC = () => {
     };
   }, []);
 
-export default PuterAi;
+export { PuterAi };
