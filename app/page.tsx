@@ -312,7 +312,6 @@ export default function GeneratorPage() {
             <p>© {new Date().getFullYear()} Svenska Meningsgeneratorn. Alla rättigheter förbehållna.</p>
           </div>
         </div>
-        <PuterAi></PuterAi>
       </footer>
 
       {/* CSS för bakgrundsmönster */}
