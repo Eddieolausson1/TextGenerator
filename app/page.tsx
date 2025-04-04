@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowDown, Sparkles, Lightbulb, Repeat, History, Brain, ChevronRight, Star, Zap } from "lucide-react"
 import { motion } from "framer-motion"
-import { PuterAi } from "@/components/puter-ai"
 
 // Framer Motion animationsvariant för fade-in
 const fadeIn = {
