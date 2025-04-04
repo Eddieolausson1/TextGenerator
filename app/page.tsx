@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import TextGenerator from "../modern-textarea"
 import TitleGenerator from "../components/title-generator"
+import ClosingPhraseGenerator from "../components/closing-phrase-generator"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowDown, Sparkles, Repeat, History, Brain, ChevronRight, Zap, Type, BookOpen } from "lucide-react"
@@ -227,7 +228,7 @@ export default function GeneratorPage() {
         <TabsContent value="closing" className="mt-6">
           <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
             <div className="bg-slate-900 rounded-xl p-1">
-              <TextGenerator /> {/* If there's a different component for the closing generator, replace it here */}
+              <ClosingPhraseGenerator />
             </div>
           </div>
         </TabsContent>
