@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
 import {
   RefreshCw,
   Copy,
@@ -34,7 +35,7 @@ const getCookie = (name: string): string | null => {
   if (typeof document === "undefined") return null
 
   const cookies = document.cookie.split(";")
-  for (let i = 0; i < cookies.length; i++) {
+  for (let i = 0; cookies.length; i++) {
     const cookie = cookies[i].trim()
     if (cookie.startsWith(name + "=")) {
       return decodeURIComponent(cookie.substring(name.length + 1))
@@ -68,226 +69,243 @@ export default function TextGenerator() {
   const [successMessage, setSuccessMessage] = useState("")
   const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null)
   const [animateFavorite, setAnimateFavorite] = useState<string | null>(null)
+  const [customWords, setCustomWords] = useState({
+    subjects: "",
+    verbs: "",
+    objects: "",
+    places: "",
+    times: "",
+    adjectives: "",
+    adverbs: "",
+    conjunctions: "",
+    expressions: "",
+  })
 
   // Svenska ordlistor för meningsgenerering
-  const subjects = [
-    "Jag",
-    "Du",
-    "Han",
-    "Hon",
-    "Vi",
-    "Ni",
-    "De",
-    "Barnet",
-    "Läraren",
-    "Hunden",
-    "Katten",
-    "Fågeln",
-    "Mannen",
-    "Kvinnan",
-    "Eleven",
-    "Programmeraren",
-    "Konstnären",
-    "Musikern",
-    "Läkaren",
-    "Kocken",
-    "Min granne",
-    "Deras vän",
-    "Hennes syster",
-    "Hans bror",
-    "Vår chef",
-  ]
+  const defaultWords = {
+    subjects: [
+      "Jag",
+      "Du",
+      "Han",
+      "Hon",
+      "Vi",
+      "Ni",
+      "De",
+      "Barnet",
+      "Läraren",
+      "Hunden",
+      "Katten",
+      "Fågeln",
+      "Mannen",
+      "Kvinnan",
+      "Eleven",
+      "Programmeraren",
+      "Konstnären",
+      "Musikern",
+      "Läkaren",
+      "Kocken",
+      "Min granne",
+      "Deras vän",
+      "Hennes syster",
+      "Hans bror",
+      "Vår chef",
+    ],
+    verbs: [
+      "gillar",
+      "älskar",
+      "hatar",
+      "ser",
+      "hör",
+      "känner",
+      "äter",
+      "dricker",
+      "springer",
+      "går",
+      "sover",
+      "arbetar",
+      "studerar",
+      "läser",
+      "skriver",
+      "sjunger",
+      "dansar",
+      "lagar",
+      "köper",
+      "säljer",
+      "tänker på",
+      "pratar om",
+      "längtar efter",
+      "drömmer om",
+      "funderar på",
+      "skrattar åt",
+      "gråter över",
+    ],
+    objects: [
+      "mat",
+      "musik",
+      "böcker",
+      "filmer",
+      "datorer",
+      "telefoner",
+      "bilar",
+      "blommor",
+      "djur",
+      "kläder",
+      "skor",
+      "konst",
+      "sport",
+      "spel",
+      "kaffe",
+      "te",
+      "vatten",
+      "choklad",
+      "glass",
+      "frukt",
+      "nyheter",
+      "politik",
+      "vetenskap",
+      "historia",
+      "framtiden",
+      "minnen",
+      "drömmar",
+    ],
+    places: [
+      "i parken",
+      "i skolan",
+      "på jobbet",
+      "hemma",
+      "i affären",
+      "på restaurangen",
+      "på biblioteket",
+      "på stranden",
+      "i skogen",
+      "på gatan",
+      "på torget",
+      "i trädgården",
+      "på sjukhuset",
+      "på museet",
+      "på bio",
+      "i köket",
+      "i Stockholm",
+      "i Göteborg",
+      "på landet",
+      "vid sjön",
+      "i bergen",
+      "utomlands",
+    ],
+    times: [
+      "på morgonen",
+      "på eftermiddagen",
+      "på kvällen",
+      "på natten",
+      "på helgen",
+      "på vardagar",
+      "på sommaren",
+      "på vintern",
+      "på hösten",
+      "på våren",
+      "varje dag",
+      "ibland",
+      "ofta",
+      "sällan",
+      "alltid",
+      "aldrig",
+      "förra veckan",
+      "nästa månad",
+      "för länge sedan",
+      "i framtiden",
+      "just nu",
+      "för ett ögonblick sedan",
+    ],
+    adjectives: [
+      "glad",
+      "ledsen",
+      "arg",
+      "trött",
+      "pigg",
+      "hungrig",
+      "törstig",
+      "vacker",
+      "ful",
+      "stor",
+      "liten",
+      "snabb",
+      "långsam",
+      "stark",
+      "svag",
+      "varm",
+      "kall",
+      "ny",
+      "gammal",
+      "intressant",
+      "tråkig",
+      "spännande",
+      "lugn",
+      "stressad",
+      "lycklig",
+      "orolig",
+      "förvånad",
+    ],
+    adverbs: [
+      "snabbt",
+      "långsamt",
+      "försiktigt",
+      "högljutt",
+      "tyst",
+      "glatt",
+      "sorgset",
+      "argt",
+      "ivrigt",
+      "lugnt",
+      "plötsligt",
+      "gradvis",
+      "verkligen",
+      "knappt",
+      "nästan",
+      "helt",
+      "delvis",
+      "särskilt",
+    ],
+    conjunctions: [
+      "och",
+      "men",
+      "eller",
+      "för",
+      "så",
+      "eftersom",
+      "därför att",
+      "om",
+      "när",
+      "medan",
+      "fastän",
+      "trots att",
+      "innan",
+      "efter att",
+    ],
+    expressions: [
+      "Det spelar ingen roll",
+      "Tänk om",
+      "Oj, vad tiden går",
+      "Det var en gång",
+      "Tro det eller ej",
+      "Som tur är",
+      "Det är aldrig för sent",
+      "Bättre sent än aldrig",
+      "Lagom är bäst",
+      "Det ordnar sig alltid",
+    ],
+  }
 
-  const verbs = [
-    "gillar",
-    "älskar",
-    "hatar",
-    "ser",
-    "hör",
-    "känner",
-    "äter",
-    "dricker",
-    "springer",
-    "går",
-    "sover",
-    "arbetar",
-    "studerar",
-    "läser",
-    "skriver",
-    "sjunger",
-    "dansar",
-    "lagar",
-    "köper",
-    "säljer",
-    "tänker på",
-    "pratar om",
-    "längtar efter",
-    "drömmer om",
-    "funderar på",
-    "skrattar åt",
-    "gråter över",
-  ]
-
-  const objects = [
-    "mat",
-    "musik",
-    "böcker",
-    "filmer",
-    "datorer",
-    "telefoner",
-    "bilar",
-    "blommor",
-    "djur",
-    "kläder",
-    "skor",
-    "konst",
-    "sport",
-    "spel",
-    "kaffe",
-    "te",
-    "vatten",
-    "choklad",
-    "glass",
-    "frukt",
-    "nyheter",
-    "politik",
-    "vetenskap",
-    "historia",
-    "framtiden",
-    "minnen",
-    "drömmar",
-  ]
-
-  const places = [
-    "i parken",
-    "i skolan",
-    "på jobbet",
-    "hemma",
-    "i affären",
-    "på restaurangen",
-    "på biblioteket",
-    "på stranden",
-    "i skogen",
-    "på gatan",
-    "på torget",
-    "i trädgården",
-    "på sjukhuset",
-    "på museet",
-    "på bio",
-    "i köket",
-    "i Stockholm",
-    "i Göteborg",
-    "på landet",
-    "vid sjön",
-    "i bergen",
-    "utomlands",
-  ]
-
-  const times = [
-    "på morgonen",
-    "på eftermiddagen",
-    "på kvällen",
-    "på natten",
-    "på helgen",
-    "på vardagar",
-    "på sommaren",
-    "på vintern",
-    "på hösten",
-    "på våren",
-    "varje dag",
-    "ibland",
-    "ofta",
-    "sällan",
-    "alltid",
-    "aldrig",
-    "förra veckan",
-    "nästa månad",
-    "för länge sedan",
-    "i framtiden",
-    "just nu",
-    "för ett ögonblick sedan",
-  ]
-
-  const adjectives = [
-    "glad",
-    "ledsen",
-    "arg",
-    "trött",
-    "pigg",
-    "hungrig",
-    "törstig",
-    "vacker",
-    "ful",
-    "stor",
-    "liten",
-    "snabb",
-    "långsam",
-    "stark",
-    "svag",
-    "varm",
-    "kall",
-    "ny",
-    "gammal",
-    "intressant",
-    "tråkig",
-    "spännande",
-    "lugn",
-    "stressad",
-    "lycklig",
-    "orolig",
-    "förvånad",
-  ]
-
-  const adverbs = [
-    "snabbt",
-    "långsamt",
-    "försiktigt",
-    "högljutt",
-    "tyst",
-    "glatt",
-    "sorgset",
-    "argt",
-    "ivrigt",
-    "lugnt",
-    "plötsligt",
-    "gradvis",
-    "verkligen",
-    "knappt",
-    "nästan",
-    "helt",
-    "delvis",
-    "särskilt",
-  ]
-
-  const conjunctions = [
-    "och",
-    "men",
-    "eller",
-    "för",
-    "så",
-    "eftersom",
-    "därför att",
-    "om",
-    "när",
-    "medan",
-    "fastän",
-    "trots att",
-    "innan",
-    "efter att",
-  ]
-
-  const expressions = [
-    "Det spelar ingen roll",
-    "Tänk om",
-    "Oj, vad tiden går",
-    "Det var en gång",
-    "Tro det eller ej",
-    "Som tur är",
-    "Det är aldrig för sent",
-    "Bättre sent än aldrig",
-    "Lagom är bäst",
-    "Det ordnar sig alltid",
-  ]
+  const combinedWords = {
+    subjects: [...defaultWords.subjects, ...customWords.subjects.split(",")],
+    verbs: [...defaultWords.verbs, ...customWords.verbs.split(",")],
+    objects: [...defaultWords.objects, ...customWords.objects.split(",")],
+    places: [...defaultWords.places, ...customWords.places.split(",")],
+    times: [...defaultWords.times, ...customWords.times.split(",")],
+    adjectives: [...defaultWords.adjectives, ...customWords.adjectives.split(",")],
+    adverbs: [...defaultWords.adverbs, ...customWords.adverbs.split(",")],
+    conjunctions: [...defaultWords.conjunctions, ...customWords.conjunctions.split(",")],
+    expressions: [...defaultWords.expressions, ...customWords.expressions.split(",")],
+  }
 
   // Funktion för att generera unikt ID
   const generateId = () => {
@@ -314,7 +332,7 @@ export default function TextGenerator() {
     const lowerSentence = sentence.toLowerCase()
 
     // Lista över alla substantiv att leta efter (kombinera subjects och objects och konvertera till lowercase)
-    const allNouns = [...subjects, ...objects].map((word) => word.toLowerCase())
+    const allNouns = [...combinedWords.subjects, ...combinedWords.objects].map((word) => word.toLowerCase())
 
     // Hitta alla substantiv som finns i meningen
     return allNouns.filter((noun) => lowerSentence.includes(noun))
@@ -326,7 +344,6 @@ export default function TextGenerator() {
 
     // Simulera en kort laddningstid för bättre UX
     setTimeout(() => {
-      const text = ""
       const sentences: string[] = []
       let usedKeywords: string[] = []
       let lastUsedSubject: string | null = null
@@ -410,37 +427,39 @@ export default function TextGenerator() {
     } else if (shouldReuseKeyword) {
       // Försök hitta ett nyckelord som finns i subjects-listan
       const subjectKeywords = keywords.filter((keyword) =>
-        subjects.some((subject) => subject.toLowerCase() === keyword),
+        combinedWords.subjects.some((subject) => subject.toLowerCase() === keyword),
       )
 
       if (subjectKeywords.length > 0) {
         // Använd ett slumpmässigt nyckelord som subjekt
         const keyword = getRandomElement(subjectKeywords)
         // Hitta originalformen (med rätt kapitalisering)
-        currentSubject = subjects.find((subject) => subject.toLowerCase() === keyword) || keyword
+        currentSubject = combinedWords.subjects.find((subject) => subject.toLowerCase() === keyword) || keyword
       } else {
-        currentSubject = getRandomElement(subjects)
+        currentSubject = getRandomElement(combinedWords.subjects)
       }
     } else {
-      currentSubject = getRandomElement(subjects)
+      currentSubject = getRandomElement(combinedWords.subjects)
     }
 
     // Välj objekt - antingen återanvänd eller slumpa fram nytt
     let currentObject = ""
     if (shouldReuseKeyword) {
       // Försök hitta ett nyckelord som finns i objects-listan
-      const objectKeywords = keywords.filter((keyword) => objects.some((object) => object.toLowerCase() === keyword))
+      const objectKeywords = keywords.filter((keyword) =>
+        combinedWords.objects.some((object) => object.toLowerCase() === keyword),
+      )
 
       if (objectKeywords.length > 0) {
         // Använd ett slumpmässigt nyckelord som objekt
         const keyword = getRandomElement(objectKeywords)
         // Hitta originalformen
-        currentObject = objects.find((object) => object.toLowerCase() === keyword) || keyword
+        currentObject = combinedWords.objects.find((object) => object.toLowerCase() === keyword) || keyword
       } else {
-        currentObject = getRandomElement(objects)
+        currentObject = getRandomElement(combinedWords.objects)
       }
     } else {
-      currentObject = getRandomElement(objects)
+      currentObject = getRandomElement(combinedWords.objects)
     }
 
     // Olika meningsstrukturer för variation
