@@ -171,7 +171,7 @@ export default function GeneratorPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
               Generera text
             </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska meningar med bara ett klick!</p>
+            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska texter med bara ett klick!</p>
           </motion.div>
 
           <motion.div
@@ -221,96 +221,95 @@ export default function GeneratorPage() {
         </div>
       </section>
 
-      {/* What It Is Section */}
-      <section id="features-section" className="py-20 md:py-32 relative">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+<section id="features-section" className="py-20 md:py-32 relative">
+  <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center mb-16"
-          >
-            <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
-              <Zap className="h-4 w-4 inline mr-2 text-cyan-400" />
-              Funktioner
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-              Vad är Meningsgeneratorn?
-            </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">
-              En kreativ textgenerator som skapar slumpmässiga svenska meningar för att inspirera till dikter,
-              berättelser och andra kreativa texter
-            </p>
-          </motion.div>
+  <div className="container mx-auto px-4 relative z-10">
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={fadeIn}
+      className="text-center mb-16"
+    >
+      <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
+        <Zap className="h-4 w-4 inline mr-2 text-cyan-400" />
+        Funktioner
+      </div>
+      <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+        Vad är Textgeneratorn?
+      </h2>
+      <p className="text-slate-300 max-w-2xl mx-auto">
+        En icke-AI-driven textgenerator som skapar slumpmässiga svenska meningar och titlar för att inspirera till dikter,
+        berättelser och andra kreativa texter. Denna textgenerator är inte sammanhängande.
+      </p>
+    </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            <FeatureCard
-              icon={<Sparkles className="h-10 w-10 text-cyan-400" />}
-              title="Intelligent ordåteranvändning"
-              description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande meningar för att skapa mer sammanhängande text."
-            />
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={staggerContainer}
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+    >
+      <FeatureCard
+        icon={<Sparkles className="h-10 w-10 text-cyan-400" />}
+        title="Intelligent ordåteranvändning"
+        description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande meningar för att skapa mer sammanhängande text."
+      />
 
-            <FeatureCard
-              icon={<Repeat className="h-10 w-10 text-cyan-400" />}
-              title="Subjektupprepning"
-              description="50% chans att samma subjekt (t.ex. 'Kocken') återanvänds i början av nästa mening för bättre textflöde."
-            />
+      <FeatureCard
+        icon={<Repeat className="h-10 w-10 text-cyan-400" />}
+        title="Subjektupprepning"
+        description="50% chans att samma subjekt (t.ex. 'Kocken') återanvänds i början av nästa mening för bättre textflöde."
+      />
 
-            <FeatureCard
-              icon={<Brain className="h-10 w-10 text-cyan-400" />}
-              title="Varierade meningsstrukturer"
-              description="Använder olika meningsstrukturer för att skapa omväxlande och intressanta texter som kan inspirera ditt kreativa skrivande."
-            />
+      <FeatureCard
+        icon={<Brain className="h-10 w-10 text-cyan-400" />}
+        title="Varierade meningsstrukturer"
+        description="Använder olika meningsstrukturer för att skapa omväxlande och intressanta texter som kan inspirera ditt kreativa skrivande."
+      />
 
-            <FeatureCard
-              icon={<History className="h-10 w-10 text-cyan-400" />}
-              title="Historikhantering"
-              description="Spara dina genererade texter automatiskt och återvänd till dem när som helst."
-            />
+      <FeatureCard
+        icon={<History className="h-10 w-10 text-cyan-400" />}
+        title="Historikhantering"
+        description="Spara dina genererade texter automatiskt och återvänd till dem när som helst."
+      />
 
-            <FeatureCard
-              icon={<Type className="h-10 w-10 text-cyan-400" />}
-              title="Kreativ titelgenerator"
-              description="Genererar titlar för böcker, filmer eller blogginlägg baserat på ämnet och tonen du väljer. Skapar även catchiga slagord och kampanjnamn."
-            />
+      <FeatureCard
+        icon={<Type className="h-10 w-10 text-cyan-400" />}
+        title="Kreativ titelgenerator"
+        description="Genererar titlar för böcker, filmer eller blogginlägg baserat på ämnet och tonen du väljer. Skapar även catchiga slagord och kampanjnamn."
+      />
 
-            <FeatureCard
-              icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
-              title="Anpassningsbar"
-              description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
-            />
-          </motion.div>
+      <FeatureCard
+        icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
+        title="Anpassningsbar"
+        description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
+      />
+    </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="mt-20 text-center"
-          >
-            <Button
-              size="lg"
-              className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
-              onClick={() => {
-                setShowGenerator(true)
-                document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
-              }}
-            >
-              Prova generatorn nu
-              <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </motion.div>
-        </div>
-      </section>
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={fadeIn}
+      className="mt-20 text-center"
+    >
+      <Button
+        size="lg"
+        className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:[...]"
+        onClick={() => {
+          setShowGenerator(true)
+          document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
+        }}
+      >
+        Prova generatorn nu
+        <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+      </Button>
+    </motion.div>
+  </div>
+</section>
 
       {/* Footer */}
       <footer className="py-12 border-t border-white/10 relative">
