@@ -11,5 +11,3 @@ const PuterAi: React.FC = () => {
       document.body.removeChild(script);
     };
   }, []);
-
-export { PuterAi };
