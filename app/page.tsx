@@ -203,7 +203,7 @@ export default function GeneratorPage() {
               className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white justify-center items-center py-2" /* Added flex-1, justify-center, items-center, py-2 */
             >
               <Type className="h-4 w-4 mr-2" />
-              Avslutningsfras Generator
+              Avslutningsgenerator
             </TabsTrigger>
           </TabsList>
         </div>
