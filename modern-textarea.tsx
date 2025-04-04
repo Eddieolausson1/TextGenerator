@@ -25,17 +25,62 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Deklarera Puter-typer för TypeScript
-declare global {
-  interface Window {
-    puter: {
-      ai: {
-        chat: (prompt: string) => Promise<string>
-      }
-      print: (text: string) => void
-    }
-  }
-}
+Certainly! Let's integrate the puter library dynamically into your React application and ensure everything works smoothly. Here's the full code with the necessary modifications:
+
+
+"use client"
+
+import { CardFooter } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Slider } from "@/components/ui/slider"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  RefreshCw,
+  Copy,
+  Check,
+  Bookmark,
+  BookmarkCheck,
+  Sparkles,
+  Save,
+  History,
+  Clock,
+  Trash2,
+  RotateCcw,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+Certainly! Let's integrate the puter library dynamically into your React application and ensure everything works smoothly. Here's the full code with the necessary modifications:
+
+
+"use client"
+
+import { CardFooter } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Slider } from "@/components/ui/slider"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  RefreshCw,
+  Copy,
+  Check,
+  Bookmark,
+  BookmarkCheck,
+  Sparkles,
+  Save,
+  History,
+  Clock,
+  Trash2,
+  RotateCcw,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
 
 // Cookie-hanteringsfunktioner
 const setCookie = (name: string, value: string, days = 365) => {
@@ -67,6 +112,26 @@ interface HistoryItem {
 // Maxantal historikposter
 const MAX_HISTORY_ITEMS = 30
 
+const loadPuterScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.puter) {
+      resolve(window.puter);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://js.puter.com/v2/";
+    script.async = true;
+    script.onload = () => {
+      resolve(window.puter);
+    };
+    script.onerror = () => {
+      reject(new Error("Failed to load puter script"));
+    };
+
+    document.body.appendChild(script);
+  });
+};
 export default function TextGenerator() {
   const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening")
   const [sentenceCount, setSentenceCount] = useState(2)
