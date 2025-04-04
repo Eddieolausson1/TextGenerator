@@ -69,16 +69,6 @@ export default function TextGenerator() {
   const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null)
   const [animateFavorite, setAnimateFavorite] = useState<string | null>(null)
 
-  const [customSubjects, setCustomSubjects] = useState<string[]>([])
-  const [customVerbs, setCustomVerbs] = useState<string[]>([])
-  const [customObjects, setCustomObjects] = useState<string[]>([])
-  const [customPlaces, setCustomPlaces] = useState<string[]>([])
-  const [customTimes, setCustomTimes] = useState<string[]>([])
-  const [customAdjectives, setCustomAdjectives] = useState<string[]>([])
-  const [customAdverbs, setCustomAdverbs] = useState<string[]>([])
-  const [customConjunctions, setCustomConjunctions] = useState<string[]>([])
-  const [customExpressions, setCustomExpressions] = useState<string[]>([])
-
   // Svenska ordlistor för meningsgenerering
   const subjects = [
     "Jag",
@@ -318,20 +308,21 @@ export default function TextGenerator() {
     return array[Math.floor(Math.random() * array.length)]
   }
 
+  // Funktion för att extrahera viktiga substantiv från en mening
+  const extractKeywords = (sentence: string): string[] => {
+    // Konvertera till lowercase för enklare jämförelse
+    const lowerSentence = sentence.toLowerCase()
+
+    // Lista över alla substantiv att leta efter (kombinera subjects och objects och konvertera till lowercase)
+    const allNouns = [...subjects, ...objects].map((word) => word.toLowerCase())
+
+    // Hitta alla substantiv som finns i meningen
+    return allNouns.filter((noun) => lowerSentence.includes(noun))
+  }
+
   // Funktion för att generera flera meningar med återanvändning av ord
   const generateText = () => {
     setIsGenerating(true)
-
-    // Combine default words with custom words
-    const allSubjects = [...subjects, ...customSubjects]
-    const allVerbs = [...verbs, ...customVerbs]
-    const allObjects = [...objects, ...customObjects]
-    const allPlaces = [...places, ...customPlaces]
-    const allTimes = [...times, ...customTimes]
-    const allAdjectives = [...adjectives, ...customAdjectives]
-    const allAdverbs = [...adverbs, ...customAdverbs]
-    const allConjunctions = [...conjunctions, ...customConjunctions]
-    const allExpressions = [...expressions, ...customExpressions]
 
     // Simulera en kort laddningstid för bättre UX
     setTimeout(() => {
@@ -343,7 +334,7 @@ export default function TextGenerator() {
       for (let i = 0; i < sentenceCount; i++) {
         // För första meningen, generera helt slumpmässigt
         if (i === 0) {
-          const firstSentence = generateRandomSentence([], null, allSubjects, allVerbs, allObjects, allPlaces, allTimes, allAdjectives, allAdverbs, allConjunctions, allExpressions)
+          const firstSentence = generateRandomSentence([], null)
           sentences.push(firstSentence)
 
           // Extrahera nyckelord från första meningen
@@ -357,7 +348,7 @@ export default function TextGenerator() {
         } else {
           // För efterföljande meningar, använd nyckelord från tidigare meningar
           // och ha 50% chans att återanvända samma subjekt
-          sentences.push(generateRandomSentence(usedKeywords, lastUsedSubject, allSubjects, allVerbs, allObjects, allPlaces, allTimes, allAdjectives, allAdverbs, allConjunctions, allExpressions))
+          sentences.push(generateRandomSentence(usedKeywords, lastUsedSubject))
 
           // Uppdatera nyckelord med nya från den senaste meningen
           const newKeywords = extractKeywords(sentences[i])
@@ -405,7 +396,7 @@ export default function TextGenerator() {
   }
 
   // Funktion för att generera en slumpmässig svensk mening med möjlighet att återanvända ord
-  const generateRandomSentence = (keywords: string[], lastSubject: string | null, allSubjects: string[], allVerbs: string[], allObjects: string[], allPlaces: string[], allTimes: string[], allAdjectives: string[], allAdverbs: string[], allConjunctions: string[], allExpressions: string[]) => {
+  const generateRandomSentence = (keywords: string[], lastSubject: string | null) => {
     // Bestäm om vi ska återanvända ett nyckelord (om det finns några)
     const shouldReuseKeyword = keywords.length > 0 && Math.random() > 0.3
 
@@ -419,37 +410,37 @@ export default function TextGenerator() {
     } else if (shouldReuseKeyword) {
       // Försök hitta ett nyckelord som finns i subjects-listan
       const subjectKeywords = keywords.filter((keyword) =>
-        allSubjects.some((subject) => subject.toLowerCase() === keyword),
+        subjects.some((subject) => subject.toLowerCase() === keyword),
       )
 
       if (subjectKeywords.length > 0) {
         // Använd ett slumpmässigt nyckelord som subjekt
         const keyword = getRandomElement(subjectKeywords)
         // Hitta originalformen (med rätt kapitalisering)
-        currentSubject = allSubjects.find((subject) => subject.toLowerCase() === keyword) || keyword
+        currentSubject = subjects.find((subject) => subject.toLowerCase() === keyword) || keyword
       } else {
-        currentSubject = getRandomElement(allSubjects)
+        currentSubject = getRandomElement(subjects)
       }
     } else {
-      currentSubject = getRandomElement(allSubjects)
+      currentSubject = getRandomElement(subjects)
     }
 
     // Välj objekt - antingen återanvänd eller slumpa fram nytt
     let currentObject = ""
     if (shouldReuseKeyword) {
       // Försök hitta ett nyckelord som finns i objects-listan
-      const objectKeywords = keywords.filter((keyword) => allObjects.some((object) => object.toLowerCase() === keyword))
+      const objectKeywords = keywords.filter((keyword) => objects.some((object) => object.toLowerCase() === keyword))
 
       if (objectKeywords.length > 0) {
         // Använd ett slumpmässigt nyckelord som objekt
         const keyword = getRandomElement(objectKeywords)
         // Hitta originalformen
-        currentObject = allObjects.find((object) => object.toLowerCase() === keyword) || keyword
+        currentObject = objects.find((object) => object.toLowerCase() === keyword) || keyword
       } else {
-        currentObject = getRandomElement(allObjects)
+        currentObject = getRandomElement(objects)
       }
     } else {
-      currentObject = getRandomElement(allObjects)
+      currentObject = getRandomElement(objects)
     }
 
     // Olika meningsstrukturer för variation
