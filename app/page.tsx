@@ -183,24 +183,24 @@ export default function GeneratorPage() {
     >
       <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
         <div className="flex justify-center">
-          <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
+          <TabsList className="grid grid-cols-3 w-full max-w-md bg-white/5 backdrop-blur-md rounded-md overflow-hidden"> {/* Changed grid-cols-2 to grid-cols-3 and added rounded-md overflow-hidden */}
             <TabsTrigger
               value="sentences"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+              className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white justify-center items-center py-2" /* Added flex-1, justify-center, items-center, py-2 */
             >
               <Sparkles className="h-4 w-4 mr-2" />
               Textgeneratorn
             </TabsTrigger>
             <TabsTrigger
               value="titles"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+              className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white justify-center items-center py-2 border-l border-white/10 border-r" /* Added flex-1, justify-center, items-center, py-2 and left/right borders */
             >
               <Type className="h-4 w-4 mr-2" />
               Titelgenerator
             </TabsTrigger>
             <TabsTrigger
               value="closing"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+              className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white justify-center items-center py-2" /* Added flex-1, justify-center, items-center, py-2 */
             >
               <Type className="h-4 w-4 mr-2" />
               Avslutningsfras Generator
