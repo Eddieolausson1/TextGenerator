@@ -1,13 +1,10 @@
 "use client"
 
-import { CardFooter } from "@/components/ui/card"
-
 import { useState, useEffect } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -24,6 +21,8 @@ import {
   RotateCcw,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // Deklarera Puter-typer för TypeScript
 declare global {
@@ -61,15 +60,20 @@ const getCookie = (name: string): string | null => {
 interface HistoryItem {
   text: string
   timestamp: number
-  id: string // Unikt ID för animationsnycklar
+  id: string
+  type: string
+  topic?: string
+  tone?: string
 }
 
 // Maxantal historikposter
 const MAX_HISTORY_ITEMS = 30
 
-export default function TextGenerator() {
-  const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening")
-  const [sentenceCount, setSentenceCount] = useState(2)
+export default function TitleGenerator() {
+  const [generatedTitle, setGeneratedTitle] = useState("Klicka på knappen för att generera en titel")
+  const [topic, setTopic] = useState("")
+  const [tone, setTone] = useState("neutral")
+  const [titleType, setTitleType] = useState("book")
   const [isGenerating, setIsGenerating] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [totalGenerated, setTotalGenerated] = useState(0)
@@ -83,225 +87,269 @@ export default function TextGenerator() {
   const [animateHistoryItem, setAnimateHistoryItem] = useState<string | null>(null)
   const [animateFavorite, setAnimateFavorite] = useState<string | null>(null)
 
-  // Svenska ordlistor för meningsgenerering
-  const subjects = [
-    "Jag",
-    "Du",
-    "Han",
-    "Hon",
-    "Vi",
-    "Ni",
-    "De",
-    "Barnet",
-    "Läraren",
-    "Hunden",
-    "Katten",
-    "Fågeln",
-    "Mannen",
-    "Kvinnan",
-    "Eleven",
-    "Programmeraren",
-    "Konstnären",
-    "Musikern",
-    "Läkaren",
-    "Kocken",
-    "Min granne",
-    "Deras vän",
-    "Hennes syster",
-    "Hans bror",
-    "Vår chef",
+  // Ordlistor för titelgenerering
+  const bookPrefixes = [
+    "Skuggan av",
+    "Hemligheten bakom",
+    "Vägen till",
+    "Den sista",
+    "Den förlorade",
+    "Drömmen om",
+    "Mysteriet med",
+    "Legenden om",
+    "Flickan som",
+    "Mannen utan",
+    "Kvinnan med",
+    "Barnet i",
+    "Huset på",
+    "Natten när",
+    "Dagen då",
+    "Resan genom",
+    "Kriget om",
+    "Kärleken till",
+    "Minnet av",
+    "Rösten från",
+    "Ljuset i",
+    "Mörkret över",
   ]
 
-  const verbs = [
-    "gillar",
-    "älskar",
-    "hatar",
-    "ser",
-    "hör",
-    "känner",
-    "äter",
-    "dricker",
-    "springer",
-    "går",
-    "sover",
-    "arbetar",
-    "studerar",
-    "läser",
-    "skriver",
-    "sjunger",
-    "dansar",
-    "lagar",
-    "köper",
-    "säljer",
-    "tänker på",
-    "pratar om",
-    "längtar efter",
-    "drömmer om",
-    "funderar på",
-    "skrattar åt",
-    "gråter över",
-  ]
-
-  const objects = [
-    "mat",
-    "musik",
-    "böcker",
-    "filmer",
-    "datorer",
-    "telefoner",
-    "bilar",
-    "blommor",
-    "djur",
-    "kläder",
-    "skor",
-    "konst",
-    "sport",
-    "spel",
-    "kaffe",
-    "te",
-    "vatten",
-    "choklad",
-    "glass",
-    "frukt",
-    "nyheter",
-    "politik",
-    "vetenskap",
-    "historia",
+  const bookSuffixes = [
+    "hjärtat",
+    "skogen",
+    "havet",
+    "bergen",
+    "stjärnorna",
+    "tiden",
     "framtiden",
-    "minnen",
-    "drömmar",
+    "det förflutna",
+    "drömmen",
+    "skuggan",
+    "ljuset",
+    "mörkret",
+    "tystnaden",
+    "sorgen",
+    "glädjen",
+    "kärleken",
+    "hoppet",
+    "minnet",
+    "sanningen",
+    "lögnen",
+    "hemligheten",
+    "mysteriet",
   ]
 
-  const places = [
-    "i parken",
-    "i skolan",
-    "på jobbet",
-    "hemma",
-    "i affären",
-    "på restaurangen",
-    "på biblioteket",
-    "på stranden",
-    "i skogen",
-    "på gatan",
-    "på torget",
-    "i trädgården",
-    "på sjukhuset",
-    "på museet",
-    "på bio",
-    "i köket",
-    "i Stockholm",
-    "i Göteborg",
-    "på landet",
-    "vid sjön",
-    "i bergen",
-    "utomlands",
+  const moviePrefixes = [
+    "Mission:",
+    "Operation:",
+    "Projekt:",
+    "Kod:",
+    "Uppdrag:",
+    "Jakten på",
+    "Kampen om",
+    "Flykten från",
+    "Återkomsten till",
+    "Hämnden efter",
+    "Uppgörelsen i",
+    "Hotet från",
+    "Attacken mot",
+    "Mysteriet i",
+    "Legenden om",
+    "Sista striden:",
+    "Första mötet:",
+    "Uppvaknandet:",
+    "Förbannelsen:",
+    "Profetian om",
   ]
 
-  const times = [
-    "på morgonen",
-    "på eftermiddagen",
-    "på kvällen",
-    "på natten",
-    "på helgen",
-    "på vardagar",
-    "på sommaren",
-    "på vintern",
-    "på hösten",
-    "på våren",
-    "varje dag",
-    "ibland",
-    "ofta",
-    "sällan",
-    "alltid",
-    "aldrig",
-    "förra veckan",
-    "nästa månad",
-    "för länge sedan",
-    "i framtiden",
-    "just nu",
-    "för ett ögonblick sedan",
+  const movieSuffixes = [
+    "Ödet",
+    "Framtiden",
+    "Undergången",
+    "Räddningen",
+    "Uppdraget",
+    "Hemligheten",
+    "Sanningen",
+    "Hämnden",
+    "Återkomsten",
+    "Uppgörelsen",
+    "Flykten",
+    "Jakten",
+    "Kampen",
+    "Hotet",
+    "Attacken",
+    "Mysteriet",
+    "Legenden",
+    "Striden",
+    "Mötet",
+    "Uppvaknandet",
   ]
 
-  const adjectives = [
-    "glad",
-    "ledsen",
-    "arg",
-    "trött",
-    "pigg",
-    "hungrig",
-    "törstig",
-    "vacker",
-    "ful",
-    "stor",
-    "liten",
-    "snabb",
-    "långsam",
-    "stark",
-    "svag",
-    "varm",
-    "kall",
-    "ny",
-    "gammal",
-    "intressant",
-    "tråkig",
-    "spännande",
-    "lugn",
-    "stressad",
-    "lycklig",
-    "orolig",
-    "förvånad",
+  const blogPrefixes = [
+    "10 sätt att",
+    "Hur du kan",
+    "Varför du bör",
+    "5 tips för att",
+    "Den ultimata guiden till",
+    "Allt du behöver veta om",
+    "Hemligheten bakom",
+    "Så här börjar du med",
+    "Enkla steg för att",
+    "Expertens råd om",
+    "Min resa med",
+    "Sanningen om",
+    "Det du inte visste om",
+    "Fördelarna med",
+    "Nackdelarna med",
+    "Framtiden för",
+    "Historien bakom",
+    "En nybörjarguide till",
+    "Så förbättrar du din",
+    "Vanliga misstag inom",
   ]
 
-  const adverbs = [
-    "snabbt",
-    "långsamt",
-    "försiktigt",
-    "högljutt",
-    "tyst",
-    "glatt",
-    "sorgset",
-    "argt",
-    "ivrigt",
-    "lugnt",
-    "plötsligt",
-    "gradvis",
-    "verkligen",
-    "knappt",
-    "nästan",
-    "helt",
-    "delvis",
-    "särskilt",
+  const blogSuffixes = [
+    "som förändrar allt",
+    "du aldrig trodde var möjligt",
+    "på bara 5 minuter om dagen",
+    "utan att spendera en krona",
+    "som experterna inte berättar",
+    "för nybörjare",
+    "för avancerade",
+    "som alla borde känna till",
+    "i 2023",
+    "för bättre resultat",
+    "för ökad produktivitet",
+    "för bättre hälsa",
+    "för mer framgång",
+    "för en bättre framtid",
+    "som faktiskt fungerar",
+    "baserat på vetenskap",
+    "från min egen erfarenhet",
+    "som förändrade mitt liv",
+    "steg för steg",
+    "med bevisade resultat",
   ]
 
-  const conjunctions = [
-    "och",
-    "men",
-    "eller",
-    "för",
-    "så",
-    "eftersom",
-    "därför att",
-    "om",
-    "när",
-    "medan",
-    "fastän",
-    "trots att",
-    "innan",
-    "efter att",
+  const sloganPrefixes = [
+    "Tänk",
+    "Upplev",
+    "Upptäck",
+    "Föreställ dig",
+    "Känn",
+    "Skapa",
+    "Förändra",
+    "Förbättra",
+    "Förnya",
+    "Inspirera",
+    "Utforska",
+    "Omfamna",
+    "Lev",
+    "Älska",
+    "Njut av",
+    "Välj",
+    "Våga",
+    "Börja",
+    "Fortsätt",
+    "Avsluta",
   ]
 
-  const expressions = [
-    "Det spelar ingen roll",
-    "Tänk om",
-    "Oj, vad tiden går",
-    "Det var en gång",
-    "Tro det eller ej",
-    "Som tur är",
-    "Det är aldrig för sent",
-    "Bättre sent än aldrig",
-    "Lagom är bäst",
-    "Det ordnar sig alltid",
+  const sloganSuffixes = [
+    "framtiden idag",
+    "skillnaden",
+    "möjligheterna",
+    "potentialen",
+    "kvaliteten",
+    "upplevelsen",
+    "känslan",
+    "resultaten",
+    "fördelarna",
+    "förändringen",
+    "förbättringen",
+    "förnyelsen",
+    "inspirationen",
+    "utforskningen",
+    "omfamningen",
+    "livet",
+    "kärleken",
+    "njutningen",
+    "valet",
+    "modet",
   ]
+
+  const toneAdjectives = {
+    professional: [
+      "effektiv",
+      "pålitlig",
+      "innovativ",
+      "strategisk",
+      "expertbaserad",
+      "resultatinriktad",
+      "professionell",
+      "kompetent",
+      "kvalitetssäkrad",
+      "framgångsrik",
+    ],
+    casual: [
+      "enkel",
+      "avslappnad",
+      "vardaglig",
+      "informell",
+      "lättsam",
+      "bekväm",
+      "okomplicerad",
+      "naturlig",
+      "spontan",
+      "jordnära",
+    ],
+    funny: [
+      "rolig",
+      "humoristisk",
+      "skämtsam",
+      "underhållande",
+      "komisk",
+      "lustig",
+      "absurd",
+      "ironisk",
+      "lekfull",
+      "skrattretande",
+    ],
+    serious: [
+      "allvarlig",
+      "djupgående",
+      "kritisk",
+      "analytisk",
+      "genomtänkt",
+      "reflekterande",
+      "seriös",
+      "betydelsefull",
+      "väsentlig",
+      "grundlig",
+    ],
+    dramatic: [
+      "dramatisk",
+      "intensiv",
+      "spännande",
+      "kraftfull",
+      "omvälvande",
+      "känsloladdad",
+      "passionerad",
+      "storslagen",
+      "episk",
+      "överväldigande",
+    ],
+    neutral: [
+      "balanserad",
+      "objektiv",
+      "opartisk",
+      "neutral",
+      "saklig",
+      "faktabaserad",
+      "rättvis",
+      "nyanserad",
+      "ovinklad",
+      "transparent",
+    ],
+  }
 
   // Funktion för att generera unikt ID
   const generateId = () => {
@@ -322,36 +370,37 @@ export default function TextGenerator() {
     return array[Math.floor(Math.random() * array.length)]
   }
 
-  // Funktion för att extrahera viktiga substantiv från en mening
-  const extractKeywords = (sentence: string): string[] => {
-    // Konvertera till lowercase för enklare jämförelse
-    const lowerSentence = sentence.toLowerCase()
-
-    // Lista över alla substantiv att leta efter (kombinera subjects och objects och konvertera till lowercase)
-    const allNouns = [...subjects, ...objects].map((word) => word.toLowerCase())
-
-    // Hitta alla substantiv som finns i meningen
-    return allNouns.filter((noun) => lowerSentence.includes(noun))
-  }
-
-  // Funktion för att generera flera meningar med Puter AI
-  const generateText = () => {
+  // Funktion för att generera en titel med Puter AI
+  const generateTitle = () => {
     setIsGenerating(true)
 
+    const userTopic = topic.trim() || "allmänt ämne"
+
     // Skapa en prompt baserad på användarens inställningar
-    const prompt = `Generera ${sentenceCount} slumpmässiga svenska meningar som hänger ihop. 
-  Använd gärna ord som återkommer i flera meningar. 
-  Använd samma subjekt i början av meningarna med 50% sannolikhet.
-  Använd varierade meningsstrukturer för att skapa intressant text.
-  Svara endast med meningarna, utan någon annan text.`
+    let prompt = ""
+
+    switch (titleType) {
+      case "book":
+        prompt = `Generera en kreativ boktitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
+        break
+      case "movie":
+        prompt = `Generera en fängslande filmtitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
+        break
+      case "blog":
+        prompt = `Generera en intresseväckande bloggtitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
+        break
+      case "slogan":
+        prompt = `Generera ett catchy slagord eller kampanjnamn på svenska om ${userTopic} med en ${tone} ton. Svara endast med slagordet, utan någon annan text.`
+        break
+    }
 
     // Kontrollera om puter är tillgängligt
     if (typeof window !== "undefined" && window.puter && window.puter.ai) {
       window.puter.ai
         .chat(prompt)
         .then((response) => {
-          // Rensa bort eventuella extra rader eller punkter i slutet
-          const cleanedResponse = response.trim()
+          // Rensa bort eventuella citattecken och extra rader
+          const cleanedResponse = response.trim().replace(/^["']|["']$/g, "")
 
           const newTotal = totalGenerated + 1
           const newItemId = generateId()
@@ -361,12 +410,15 @@ export default function TextGenerator() {
             text: cleanedResponse,
             timestamp: Date.now(),
             id: newItemId,
+            type: titleType,
+            topic: userTopic,
+            tone: tone,
           }
 
           // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
           const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
 
-          setGeneratedText(cleanedResponse)
+          setGeneratedTitle(cleanedResponse)
           setTotalGenerated(newTotal)
           setHistory(newHistory)
           setIsFavorite(favorites.includes(cleanedResponse))
@@ -377,74 +429,75 @@ export default function TextGenerator() {
           setTimeout(() => setAnimateHistoryItem(null), 1000)
 
           // Spara i cookies
-          setCookie("totalGenerated", newTotal.toString())
-          setCookie("history", JSON.stringify(newHistory))
+          setCookie("titleTotalGenerated", newTotal.toString())
+          setCookie("titleHistory", JSON.stringify(newHistory))
 
           // Visa success-meddelande
-          showSuccessMessage("Text genererad!")
+          showSuccessMessage("Titel genererad!")
         })
         .catch((error) => {
-          console.error("Fel vid generering av text:", error)
+          console.error("Fel vid generering av titel:", error)
           setIsGenerating(false)
           showSuccessMessage("Ett fel uppstod vid generering")
         })
     } else {
       // Fallback om Puter inte är tillgängligt
       setTimeout(() => {
-        const text = ""
-        const sentences: string[] = []
-        let usedKeywords: string[] = []
-        let lastUsedSubject: string | null = null
+        let newTitle = ""
+        const toneAdj = getRandomElement(toneAdjectives[tone as keyof typeof toneAdjectives] || toneAdjectives.neutral)
 
-        for (let i = 0; i < sentenceCount; i++) {
-          // För första meningen, generera helt slumpmässigt
-          if (i === 0) {
-            const firstSentence = generateRandomSentence([], null)
-            sentences.push(firstSentence)
-
-            // Extrahera nyckelord från första meningen
-            usedKeywords = extractKeywords(firstSentence)
-
-            // Spara det använda subjektet
-            const match = firstSentence.match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
-            if (match) {
-              lastUsedSubject = match[1]
+        switch (titleType) {
+          case "book":
+            if (Math.random() > 0.5) {
+              newTitle = `${getRandomElement(bookPrefixes)} ${userTopic}`
+            } else {
+              newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}s ${getRandomElement(bookSuffixes)}`
             }
-          } else {
-            // För efterföljande meningar, använd nyckelord från tidigare meningar
-            // och ha 50% chans att återanvända samma subjekt
-            sentences.push(generateRandomSentence(usedKeywords, lastUsedSubject))
-
-            // Uppdatera nyckelord med nya från den senaste meningen
-            const newKeywords = extractKeywords(sentences[i])
-            usedKeywords = [...new Set([...usedKeywords, ...newKeywords])]
-
-            // Uppdatera det senast använda subjektet
-            const match = sentences[i].match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
-            if (match) {
-              lastUsedSubject = match[1]
+            // Ibland lägg till ett adjektiv
+            if (Math.random() > 0.7) {
+              newTitle = `Den ${toneAdj}a ${newTitle.toLowerCase()}`
             }
-          }
+            break
+
+          case "movie":
+            if (Math.random() > 0.5) {
+              newTitle = `${getRandomElement(moviePrefixes)} ${userTopic}`
+            } else {
+              newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}: ${getRandomElement(movieSuffixes)}`
+            }
+            break
+
+          case "blog":
+            newTitle = `${getRandomElement(blogPrefixes)} ${userTopic} ${getRandomElement(blogSuffixes)}`
+            break
+
+          case "slogan":
+            newTitle = `${getRandomElement(sloganPrefixes)} ${userTopic}. ${getRandomElement(sloganSuffixes)}.`
+            // Gör första bokstaven stor
+            newTitle = newTitle.charAt(0).toUpperCase() + newTitle.slice(1)
+            break
         }
 
-        const newText = sentences.join(" ")
         const newTotal = totalGenerated + 1
         const newItemId = generateId()
 
         // Skapa ny historikpost
         const newHistoryItem: HistoryItem = {
-          text: newText,
+          text: newTitle,
           timestamp: Date.now(),
           id: newItemId,
+          type: titleType,
+          topic: userTopic,
+          tone: tone,
         }
 
         // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
         const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
 
-        setGeneratedText(newText)
+        setGeneratedTitle(newTitle)
         setTotalGenerated(newTotal)
         setHistory(newHistory)
-        setIsFavorite(favorites.includes(newText))
+        setIsFavorite(favorites.includes(newTitle))
         setIsGenerating(false)
 
         // Animera den nya historikposten
@@ -452,109 +505,13 @@ export default function TextGenerator() {
         setTimeout(() => setAnimateHistoryItem(null), 1000)
 
         // Spara i cookies
-        setCookie("totalGenerated", newTotal.toString())
-        setCookie("history", JSON.stringify(newHistory))
+        setCookie("titleTotalGenerated", newTotal.toString())
+        setCookie("titleHistory", JSON.stringify(newHistory))
 
         // Visa success-meddelande
-        showSuccessMessage("Text genererad!")
+        showSuccessMessage("Titel genererad!")
       }, 500)
     }
-  }
-
-  // Funktion för att generera en slumpmässig svensk mening med möjlighet att återanvända ord
-  const generateRandomSentence = (keywords: string[], lastSubject: string | null) => {
-    // Bestäm om vi ska återanvända ett nyckelord (om det finns några)
-    const shouldReuseKeyword = keywords.length > 0 && Math.random() > 0.3
-
-    // Bestäm om vi ska återanvända samma subjekt (50% chans)
-    const shouldReuseSubject = lastSubject !== null && Math.random() < 0.5
-
-    // Välj subjekt - antingen återanvänd samma subjekt, eller ett nyckelord, eller slumpa fram nytt
-    let currentSubject = ""
-    if (shouldReuseSubject) {
-      currentSubject = lastSubject
-    } else if (shouldReuseKeyword) {
-      // Försök hitta ett nyckelord som finns i subjects-listan
-      const subjectKeywords = keywords.filter((keyword) =>
-        subjects.some((subject) => subject.toLowerCase() === keyword),
-      )
-
-      if (subjectKeywords.length > 0) {
-        // Använd ett slumpmässigt nyckelord som subjekt
-        const keyword = getRandomElement(subjectKeywords)
-        // Hitta originalformen (med rätt kapitalisering)
-        currentSubject = subjects.find((subject) => subject.toLowerCase() === keyword) || keyword
-      } else {
-        currentSubject = getRandomElement(subjects)
-      }
-    } else {
-      currentSubject = getRandomElement(subjects)
-    }
-
-    // Välj objekt - antingen återanvänd eller slumpa fram nytt
-    let currentObject = ""
-    if (shouldReuseKeyword) {
-      // Försök hitta ett nyckelord som finns i objects-listan
-      const objectKeywords = keywords.filter((keyword) => objects.some((object) => object.toLowerCase() === keyword))
-
-      if (objectKeywords.length > 0) {
-        // Använd ett slumpmässigt nyckelord som objekt
-        const keyword = getRandomElement(objectKeywords)
-        // Hitta originalformen
-        currentObject = objects.find((object) => object.toLowerCase() === keyword) || keyword
-      } else {
-        currentObject = getRandomElement(objects)
-      }
-    } else {
-      currentObject = getRandomElement(objects)
-    }
-
-    // Olika meningsstrukturer för variation
-    const sentenceTypes = [
-      // Grundläggande: Subjekt + Verb + Objekt
-      () => `${currentSubject} ${getRandomElement(verbs)} ${currentObject}.`,
-
-      // Med plats: Subjekt + Verb + Objekt + Plats
-      () => `${currentSubject} ${getRandomElement(verbs)} ${currentObject} ${getRandomElement(places)}.`,
-
-      // Med tid: Subjekt + Verb + Objekt + Tid
-      () => `${currentSubject} ${getRandomElement(verbs)} ${currentObject} ${getRandomElement(times)}.`,
-
-      // Med adjektiv: Subjekt + är + Adjektiv
-      () => `${currentSubject} är ${getRandomElement(adjectives)}.`,
-
-      // Komplex: Subjekt + Verb + Objekt + Plats + Tid
-      () =>
-        `${currentSubject} ${getRandomElement(verbs)} ${currentObject} ${getRandomElement(places)} ${getRandomElement(times)}.`,
-
-      // Fråga: Verb + Subjekt + Objekt?
-      () =>
-        `${getRandomElement(verbs).charAt(0).toUpperCase() + getRandomElement(verbs).slice(1)} ${currentSubject.toLowerCase()} ${currentObject}?`,
-
-      // Negation: Subjekt + Verb + inte + Objekt
-      () => `${currentSubject} ${getRandomElement(verbs)} inte ${currentObject}.`,
-
-      // Med adverb: Subjekt + Verb + Adverb + Objekt
-      () => `${currentSubject} ${getRandomElement(verbs)} ${getRandomElement(adverbs)} ${currentObject}.`,
-
-      // Sammansatt mening med konjunktion
-      () =>
-        `${currentSubject} ${getRandomElement(verbs)} ${currentObject}, ${getRandomElement(conjunctions)} ${getRandomElement(subjects).toLowerCase()} ${getRandomElement(verbs)} ${getRandomElement(objects)}.`,
-
-      // Uttryck + enkel mening
-      () => `${getRandomElement(expressions)}! ${currentSubject} ${getRandomElement(verbs)} ${currentObject}.`,
-
-      // Adjektiv + subjekt + verb + objekt
-      () =>
-        `${getRandomElement(adjectives).charAt(0).toUpperCase() + getRandomElement(adjectives).slice(1)} ${currentSubject.toLowerCase()} ${getRandomElement(verbs)} ${currentObject}.`,
-
-      // Tid + verb + subjekt + objekt
-      () =>
-        `${getRandomElement(times).charAt(0).toUpperCase() + getRandomElement(times).slice(1)} ${getRandomElement(verbs)} ${currentSubject.toLowerCase()} ${currentObject}.`,
-    ]
-
-    // Välj en slumpmässig meningsstruktur och generera en mening
-    return sentenceTypes[Math.floor(Math.random() * sentenceTypes.length)]()
   }
 
   // Funktion för att formatera datum
@@ -570,7 +527,7 @@ export default function TextGenerator() {
 
   // Funktion för att kopiera texten
   const copyText = () => {
-    navigator.clipboard.writeText(generatedText)
+    navigator.clipboard.writeText(generatedTitle)
     setIsCopied(true)
 
     setTimeout(() => {
@@ -586,31 +543,31 @@ export default function TextGenerator() {
     let newFavorites: string[]
 
     if (isFavorite) {
-      newFavorites = favorites.filter((fav) => fav !== generatedText)
+      newFavorites = favorites.filter((fav) => fav !== generatedTitle)
       setFavorites(newFavorites)
       setIsFavorite(false)
       showSuccessMessage("Borttagen från favoriter")
     } else {
-      newFavorites = [...favorites, generatedText]
+      newFavorites = [...favorites, generatedTitle]
       setFavorites(newFavorites)
       setIsFavorite(true)
 
       // Animera den nya favoriten
-      setAnimateFavorite(generatedText)
+      setAnimateFavorite(generatedTitle)
       setTimeout(() => setAnimateFavorite(null), 1000)
 
       showSuccessMessage("Sparad som favorit!")
     }
 
     // Spara favoriter i cookie
-    setCookie("favorites", JSON.stringify(newFavorites))
+    setCookie("titleFavorites", JSON.stringify(newFavorites))
   }
 
   // Funktion för att rensa historik
   const clearHistory = () => {
     if (confirm("Är du säker på att du vill rensa hela historiken?")) {
       setHistory([])
-      setCookie("history", JSON.stringify([]))
+      setCookie("titleHistory", JSON.stringify([]))
       showSuccessMessage("Historiken har rensats")
     }
   }
@@ -619,13 +576,13 @@ export default function TextGenerator() {
   useEffect(() => {
     if (typeof window !== "undefined" && !isLoaded) {
       // Ladda favoriter
-      const savedFavorites = getCookie("favorites")
+      const savedFavorites = getCookie("titleFavorites")
       if (savedFavorites) {
         try {
           const parsedFavorites = JSON.parse(savedFavorites)
           if (Array.isArray(parsedFavorites)) {
             setFavorites(parsedFavorites)
-            setIsFavorite(parsedFavorites.includes(generatedText))
+            setIsFavorite(parsedFavorites.includes(generatedTitle))
           }
         } catch (e) {
           console.error("Kunde inte tolka sparade favoriter:", e)
@@ -633,7 +590,7 @@ export default function TextGenerator() {
       }
 
       // Ladda historik
-      const savedHistory = getCookie("history")
+      const savedHistory = getCookie("titleHistory")
       if (savedHistory) {
         try {
           const parsedHistory = JSON.parse(savedHistory)
@@ -651,19 +608,19 @@ export default function TextGenerator() {
       }
 
       // Ladda antal genererade
-      const savedTotal = getCookie("totalGenerated")
+      const savedTotal = getCookie("titleTotalGenerated")
       if (savedTotal && !isNaN(Number(savedTotal))) {
         setTotalGenerated(Number(savedTotal))
       }
 
       setIsLoaded(true)
     }
-  }, [generatedText, isLoaded])
+  }, [generatedTitle, isLoaded])
 
   // Kontrollera om den aktuella texten är en favorit när texten ändras
   useEffect(() => {
-    setIsFavorite(favorites.includes(generatedText))
-  }, [generatedText, favorites])
+    setIsFavorite(favorites.includes(generatedTitle))
+  }, [generatedTitle, favorites])
 
   return (
     <div className="flex items-center justify-center w-full p-4">
@@ -671,8 +628,8 @@ export default function TextGenerator() {
         <CardHeader className="relative">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-medium">Meningsgenerator</CardTitle>
-              <CardDescription>Genererar slumpmässiga svenska meningar</CardDescription>
+              <CardTitle className="text-xl font-medium">Titelgenerator</CardTitle>
+              <CardDescription>Genererar kreativa titlar och slagord</CardDescription>
             </div>
             <Badge
               variant="outline"
@@ -725,15 +682,15 @@ export default function TextGenerator() {
           >
             <CardContent className="space-y-6 pt-4">
               <div className="grid w-full gap-2">
-                <Label htmlFor="generatedText">Genererad text</Label>
+                <Label htmlFor="generatedTitle">Genererad titel</Label>
                 <div className="relative">
                   <Textarea
-                    id="generatedText"
+                    id="generatedTitle"
                     readOnly
-                    value={generatedText}
-                    placeholder="Genererad text visas här"
+                    value={generatedTitle}
+                    placeholder="Genererad titel visas här"
                     className={cn(
-                      "min-h-32 resize-none border-2 rounded-md focus:ring-2 focus:ring-offset-1 pr-10 transition-all duration-300",
+                      "min-h-20 resize-none border-2 rounded-md focus:ring-2 focus:ring-offset-1 pr-10 transition-all duration-300",
                       isGenerating && "opacity-50",
                       !isGenerating && "animate-in fade-in-50 duration-300",
                     )}
@@ -784,23 +741,57 @@ export default function TextGenerator() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Detta fält är skrivskyddat. Den automatiskt genererade texten visas här.
+                  Detta fält är skrivskyddat. Den automatiskt genererade titeln visas här.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="sentence-count">Antal meningar: {sentenceCount}</Label>
+                <div className="grid gap-4">
+                  <div>
+                    <Label htmlFor="topic">Ämne (valfritt)</Label>
+                    <Input
+                      id="topic"
+                      placeholder="T.ex. kärlek, äventyr, teknologi..."
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title-type">Typ av titel</Label>
+                      <Select value={titleType} onValueChange={setTitleType}>
+                        <SelectTrigger id="title-type" className="mt-1">
+                          <SelectValue placeholder="Välj typ" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="book">Bok</SelectItem>
+                          <SelectItem value="movie">Film</SelectItem>
+                          <SelectItem value="blog">Blogginlägg</SelectItem>
+                          <SelectItem value="slogan">Slogan/Kampanj</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="tone">Ton</Label>
+                      <Select value={tone} onValueChange={setTone}>
+                        <SelectTrigger id="tone" className="mt-1">
+                          <SelectValue placeholder="Välj ton" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="professional">Professionell</SelectItem>
+                          <SelectItem value="casual">Avslappnad</SelectItem>
+                          <SelectItem value="funny">Humoristisk</SelectItem>
+                          <SelectItem value="serious">Seriös</SelectItem>
+                          <SelectItem value="dramatic">Dramatisk</SelectItem>
+                          <SelectItem value="neutral">Neutral</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
-                <Slider
-                  id="sentence-count"
-                  min={1}
-                  max={5}
-                  step={1}
-                  value={[sentenceCount]}
-                  onValueChange={(value) => setSentenceCount(value[0])}
-                  className="w-full"
-                />
 
                 {favorites.length > 0 && (
                   <div className="pt-2 animate-in slide-in-from-bottom-5 duration-500">
@@ -819,7 +810,7 @@ export default function TextGenerator() {
                             "text-xs p-2 bg-muted rounded-md cursor-pointer hover:bg-muted/80 transition-all duration-200 hover:translate-x-1 hover:shadow-sm",
                             animateFavorite === fav && "animate-pulse bg-amber-100 dark:bg-amber-900/30",
                           )}
-                          onClick={() => setGeneratedText(fav)}
+                          onClick={() => setGeneratedTitle(fav)}
                         >
                           {fav}
                         </div>
@@ -832,7 +823,7 @@ export default function TextGenerator() {
 
             <CardFooter>
               <Button
-                onClick={generateText}
+                onClick={generateTitle}
                 className={cn(
                   "w-full flex items-center gap-2 transition-all duration-300",
                   !isGenerating && "hover:scale-[1.02] hover:shadow-md",
@@ -841,7 +832,7 @@ export default function TextGenerator() {
                 variant="default"
               >
                 {isGenerating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                Generera {sentenceCount > 1 ? `${sentenceCount} meningar` : "en mening"}
+                Generera titel
               </Button>
             </CardFooter>
           </TabsContent>
@@ -854,7 +845,7 @@ export default function TextGenerator() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1 text-sm font-medium">
                   <Clock className="h-3.5 w-3.5" />
-                  <span>Genererade meningar</span>
+                  <span>Genererade titlar</span>
                   <Badge variant="secondary" className="ml-1 text-xs">
                     Sparade
                   </Badge>
@@ -876,7 +867,7 @@ export default function TextGenerator() {
                 <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground animate-in fade-in-50 duration-500">
                   <History className="h-12 w-12 mb-2 opacity-20" />
                   <p>Ingen historik än</p>
-                  <p className="text-xs mt-1">Genererade meningar kommer att visas här</p>
+                  <p className="text-xs mt-1">Genererade titlar kommer att visas här</p>
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
@@ -897,7 +888,7 @@ export default function TextGenerator() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => setGeneratedText(item.text)}
+                            onClick={() => setGeneratedTitle(item.text)}
                             className="h-6 w-6 transition-all duration-200 hover:scale-110 hover:bg-primary/10"
                             title="Använd igen"
                           >
@@ -907,7 +898,7 @@ export default function TextGenerator() {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              setGeneratedText(item.text)
+                              setGeneratedTitle(item.text)
                               setActiveTab("generator")
                             }}
                             className="h-6 w-6 transition-all duration-200 hover:scale-110 hover:bg-primary/10"
@@ -918,6 +909,14 @@ export default function TextGenerator() {
                         </div>
                       </div>
                       <p className="text-xs">{item.text}</p>
+                      {item.topic && (
+                        <div className="mt-1 flex items-center gap-1">
+                          <Badge variant="secondary" className="text-[10px]">
+                            {item.type}
+                          </Badge>
+                          <span className="text-[10px] text-muted-foreground">{item.topic}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -928,14 +927,14 @@ export default function TextGenerator() {
               <Button
                 onClick={() => {
                   setActiveTab("generator")
-                  generateText()
+                  generateTitle()
                 }}
                 className="w-full flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
                 disabled={isGenerating}
                 variant="default"
               >
                 <Sparkles className="h-4 w-4" />
-                Generera ny text
+                Generera ny titel
               </Button>
             </CardFooter>
           </TabsContent>
