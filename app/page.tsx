@@ -153,88 +153,88 @@ export default function GeneratorPage() {
       </section>
 
       {/* Generator Section */}
-      <section id="generator-section" className="py-20 md:py-32 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 opacity-80" />
+<section id="generator-section" className="py-20 md:py-32 relative">
+  <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 opacity-80" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="text-center mb-16"
-          >
-            <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
-              <Sparkles className="h-4 w-4 inline mr-2 text-cyan-400" />
-              Kreativ inspiration
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-              Generera text
-            </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska texter med bara ett klick!</p>
-          </motion.div>
+  <div className="container mx-auto px-4 relative z-10">
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={fadeIn}
+      className="text-center mb-16"
+    >
+      <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
+        <Sparkles className="h-4 w-4 inline mr-2 text-cyan-400" />
+        Kreativ inspiration
+      </div>
+      <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+        Generera text
+      </h2>
+      <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska texter med bara ett klick!</p>
+    </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="max-w-4xl mx-auto"
-          >
-            <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
-              <div className="flex justify-center">
-                <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
-                  <TabsTrigger
-                    value="sentences"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Textgeneratorn
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="titles"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <Type className="h-4 w-4 mr-2" />
-                    Titelgenerator
-                  </TabsTrigger>
-                                    <TabsTrigger
-                    value="closing"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <Type className="h-4 w-4 mr-2" />
-                    Avslutningsfras Generator
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-
-              <TabsContent value="sentences" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <TextGenerator />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="titles" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <TitleGenerator />
-                  </div>
-                </div>
-              </TabsContent>
-
-                            <TabsContent value="closing" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <TextGenerator />
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7 }}
+      className="max-w-4xl mx-auto"
+    >
+      <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
+        <div className="flex justify-center">
+          <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
+            <TabsTrigger
+              value="sentences"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Textgeneratorn
+            </TabsTrigger>
+            <TabsTrigger
+              value="titles"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+            >
+              <Type className="h-4 w-4 mr-2" />
+              Titelgenerator
+            </TabsTrigger>
+            <TabsTrigger
+              value="closing"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+            >
+              <Type className="h-4 w-4 mr-2" />
+              Avslutningsfras Generator
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </section>
+
+        <TabsContent value="sentences" className="mt-6">
+          <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+            <div className="bg-slate-900 rounded-xl p-1">
+              <TextGenerator />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="titles" className="mt-6">
+          <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+            <div className="bg-slate-900 rounded-xl p-1">
+              <TitleGenerator />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="closing" className="mt-6">
+          <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+            <div className="bg-slate-900 rounded-xl p-1">
+              <TextGenerator /> {/* If there's a different component for the closing generator, replace it here */}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </motion.div>
+  </div>
+</section>
 
       {/* What It Is Section */}
       <section id="features-section" className="py-20 md:py-32 relative">
