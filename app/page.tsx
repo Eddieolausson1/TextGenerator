@@ -1,15 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import TextGenerator from "../modern-textarea"
-import TitleGenerator from "../components/title-generator"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowDown, Sparkles, Repeat, History, Brain, ChevronRight, Zap, Type, BookOpen } from "lucide-react"
-import { motion } from "framer-motion"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import TextGenerator from "../modern-textarea";
+import TitleGenerator from "../components/title-generator";
+import ClosingPhraseGenerator from "../components/closing-phrase-generator"; // Importera ClosingPhraseGenerator
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ArrowDown,
+  Sparkles,
+  Repeat,
+  History,
+  Brain,
+  ChevronRight,
+  Zap,
+  Type,
+  BookOpen,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Framer Motion animationsvariant för fade-in
 const fadeIn = {
@@ -19,7 +30,7 @@ const fadeIn = {
     y: 0,
     transition: { duration: 0.6 },
   },
-}
+};
 
 // Framer Motion animationsvariant för staggered children
 const staggerContainer = {
@@ -30,22 +41,22 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-}
+};
 
 export default function GeneratorPage() {
-  const [showGenerator, setShowGenerator] = useState(false)
-  const [scrollY, setScrollY] = useState(0)
-  const [activeGeneratorTab, setActiveGeneratorTab] = useState("sentences")
+  const [showGenerator, setShowGenerator] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [activeGeneratorTab, setActiveGeneratorTab] = useState("sentences");
 
   // Lyssna på scroll för parallax-effekter
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY)
-    }
+      setScrollY(window.scrollY);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
@@ -103,10 +114,10 @@ export default function GeneratorPage() {
               size="lg"
               className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
               onClick={() => {
-                setShowGenerator(true)
+                setShowGenerator(true);
                 setTimeout(() => {
-                  document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
-                }, 100)
+                  document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
               }}
             >
               Prova generatorn
@@ -118,7 +129,7 @@ export default function GeneratorPage() {
               variant="outline"
               className="border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white rounded-full transition-all duration-300"
               onClick={() => {
-                document.getElementById("features-section")?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("features-section")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Läs mer
@@ -183,7 +194,7 @@ export default function GeneratorPage() {
           >
             <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
               <div className="flex justify-center">
-                <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
+                <TabsList className="grid grid-cols-3 w-full max-w-md bg-white/5 backdrop-blur-md">
                   <TabsTrigger
                     value="sentences"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
@@ -197,6 +208,13 @@ export default function GeneratorPage() {
                   >
                     <Type className="h-4 w-4 mr-2" />
                     Titelgenerator
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="closingPhrases"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Avslutningsfrasgenerator
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -216,100 +234,107 @@ export default function GeneratorPage() {
                   </div>
                 </div>
               </TabsContent>
+              <TabsContent value="closingPhrases" className="mt-6">
+                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+                  <div className="bg-slate-900 rounded-xl p-1">
+                    <ClosingPhraseGenerator />
+                  </div>
+                </div>
+              </TabsContent>
             </Tabs>
           </motion.div>
         </div>
       </section>
 
-<section id="features-section" className="py-20 md:py-32 relative">
-  <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+      <section id="features-section" className="py-20 md:py-32 relative">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
-  <div className="container mx-auto px-4 relative z-10">
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={fadeIn}
-      className="text-center mb-16"
-    >
-      <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
-        <Zap className="h-4 w-4 inline mr-2 text-cyan-400" />
-        Funktioner
-      </div>
-      <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-        Vad är Textgeneratorn?
-      </h2>
-      <p className="text-slate-300 max-w-2xl mx-auto">
-        En icke-AI-driven textgenerator som skapar slumpmässiga svenska meningar och titlar för att inspirera till dikter,
-        berättelser och andra kreativa texter. Denna textgenerator är inte sammanhängande.
-      </p>
-    </motion.div>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
+            className="text-center mb-16"
+          >
+            <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-4">
+              <Zap className="h-4 w-4 inline mr-2 text-cyan-400" />
+              Funktioner
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+              Vad är Textgeneratorn?
+            </h2>
+            <p className="text-slate-300 max-w-2xl mx-auto">
+              En icke-AI-driven textgenerator som skapar slumpmässiga svenska meningar och titlar för att inspirera till dikter,
+              berättelser och andra kreativa texter. Denna textgenerator är inte sammanhängande.
+            </p>
+          </motion.div>
 
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={staggerContainer}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-    >
-      <FeatureCard
-        icon={<Sparkles className="h-10 w-10 text-cyan-400" />}
-        title="Intelligent ordåteranvändning"
-        description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande meningar för att skapa mer sammanhängande text."
-      />
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            <FeatureCard
+              icon={<Sparkles className="h-10 w-10 text-cyan-400" />}
+              title="Intelligent ordåteranvändning"
+              description="Generatorn identifierar viktiga ord i texten och återanvänder dem i efterföljande meningar för att skapa mer sammanhängande text."
+            />
 
-      <FeatureCard
-        icon={<Repeat className="h-10 w-10 text-cyan-400" />}
-        title="Subjektupprepning"
-        description="50% chans att samma subjekt (t.ex. 'Kocken') återanvänds i början av nästa mening för bättre textflöde."
-      />
+            <FeatureCard
+              icon={<Repeat className="h-10 w-10 text-cyan-400" />}
+              title="Subjektupprepning"
+              description="50% chans att samma subjekt (t.ex. 'Kocken') återanvänds i början av nästa mening för bättre textflöde."
+            />
 
-      <FeatureCard
-        icon={<Brain className="h-10 w-10 text-cyan-400" />}
-        title="Varierade meningsstrukturer"
-        description="Använder olika meningsstrukturer för att skapa omväxlande och intressanta texter som kan inspirera ditt kreativa skrivande."
-      />
+            <FeatureCard
+              icon={<Brain className="h-10 w-10 text-cyan-400" />}
+              title="Varierade meningsstrukturer"
+              description="Använder olika meningsstrukturer för att skapa omväxlande och intressanta texter som kan inspirera ditt kreativa skrivande."
+            />
 
-      <FeatureCard
-        icon={<History className="h-10 w-10 text-cyan-400" />}
-        title="Historikhantering"
-        description="Spara dina genererade texter automatiskt och återvänd till dem när som helst."
-      />
+            <FeatureCard
+              icon={<History className="h-10 w-10 text-cyan-400" />}
+              title="Historikhantering"
+              description="Spara dina genererade texter automatiskt och återvänd till dem när som helst."
+            />
 
-      <FeatureCard
-        icon={<Type className="h-10 w-10 text-cyan-400" />}
-        title="Kreativ titelgenerator"
-        description="Genererar titlar för böcker, filmer eller blogginlägg baserat på ämnet och tonen du väljer. Skapar även catchiga slagord och kampanjnamn."
-      />
+            <FeatureCard
+              icon={<Type className="h-10 w-10 text-cyan-400" />}
+              title="Kreativ titelgenerator"
+              description="Genererar titlar för böcker, filmer eller blogginlägg baserat på ämnet och tonen du väljer. Skapar även catchiga slagord och kampanjnamn."
+            />
 
-      <FeatureCard
-        icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
-        title="Anpassningsbar"
-        description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
-      />
-    </motion.div>
+            <FeatureCard
+              icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
+              title="Anpassningsbar"
+              description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
+            />
+          </motion.div>
 
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={fadeIn}
-      className="mt-20 text-center"
-    >
-      <Button
-        size="lg"
-        className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:[...]"
-        onClick={() => {
-          setShowGenerator(true)
-          document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
-        }}
-      >
-        Prova generatorn nu
-        <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-      </Button>
-    </motion.div>
-  </div>
-</section>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
+            className="mt-20 text-center"
+          >
+            <Button
+              size="lg"
+              className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:[...]"
+              onClick={() => {
+                setShowGenerator(true);
+                document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Prova generatorn nu
+              <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-12 border-t border-white/10 relative">
@@ -347,18 +372,17 @@ export default function GeneratorPage() {
       {/* CSS för bakgrundsmönster */}
       <style jsx global>{`
         .bg-grid-pattern {
-          background-image: 
-            linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
           background-size: 30px 30px;
         }
-        
+
         html {
           scroll-behavior: smooth;
         }
       `}</style>
     </div>
-  )
+  );
 }
 
 // Komponent för funktionskort
@@ -374,6 +398,5 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }
-
