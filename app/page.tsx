@@ -1,26 +1,15 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState, useEffect } from "react";
-import TextGenerator from "../modern-textarea";
-import TitleGenerator from "../components/title-generator";
-import ClosingPhraseGenerator from "../components/closing-phrase-generator"; // Importera ClosingPhraseGenerator
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowDown,
-  Sparkles,
-  Repeat,
-  History,
-  Brain,
-  ChevronRight,
-  Zap,
-  Type,
-  BookOpen,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect } from "react"
+import TextGenerator from "../modern-textarea"
+import TitleGenerator from "../components/title-generator"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { ArrowDown, Sparkles, Repeat, History, Brain, ChevronRight, Zap, Type, BookOpen } from "lucide-react"
+import { motion } from "framer-motion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // Framer Motion animationsvariant för fade-in
 const fadeIn = {
@@ -30,7 +19,7 @@ const fadeIn = {
     y: 0,
     transition: { duration: 0.6 },
   },
-};
+}
 
 // Framer Motion animationsvariant för staggered children
 const staggerContainer = {
@@ -41,22 +30,22 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-};
+}
 
 export default function GeneratorPage() {
-  const [showGenerator, setShowGenerator] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [activeGeneratorTab, setActiveGeneratorTab] = useState("sentences");
+  const [showGenerator, setShowGenerator] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+  const [activeGeneratorTab, setActiveGeneratorTab] = useState("sentences")
 
   // Lyssna på scroll för parallax-effekter
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+      setScrollY(window.scrollY)
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
@@ -97,7 +86,7 @@ export default function GeneratorPage() {
             variants={fadeIn}
             className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
           >
-            Svenska Textgeneratorn
+            Svenska Meningsgeneratorn
           </motion.h1>
 
           <motion.p
@@ -106,7 +95,7 @@ export default function GeneratorPage() {
             variants={fadeIn}
             className="text-xl md:text-2xl text-slate-300 max-w-2xl mb-10"
           >
-            Skapa slumpmässiga texter!
+            Skapa sammanhängande text med slumpmässig generering för inspiration till dikter och kreativt skrivande
           </motion.p>
 
           <motion.div initial="hidden" animate="visible" variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
@@ -114,10 +103,10 @@ export default function GeneratorPage() {
               size="lg"
               className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
               onClick={() => {
-                setShowGenerator(true);
+                setShowGenerator(true)
                 setTimeout(() => {
-                  document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" });
-                }, 100);
+                  document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
+                }, 100)
               }}
             >
               Prova generatorn
@@ -129,7 +118,7 @@ export default function GeneratorPage() {
               variant="outline"
               className="border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white rounded-full transition-all duration-300"
               onClick={() => {
-                document.getElementById("features-section")?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById("features-section")?.scrollIntoView({ behavior: "smooth" })
               }}
             >
               Läs mer
@@ -182,7 +171,7 @@ export default function GeneratorPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
               Generera text
             </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska texter med bara ett klick!</p>
+            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska meningar med bara ett klick!</p>
           </motion.div>
 
           <motion.div
@@ -194,7 +183,7 @@ export default function GeneratorPage() {
           >
             <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
               <div className="flex justify-center">
-                <TabsList className="grid grid-cols-3 w-full max-w-md bg-white/5 backdrop-blur-md">
+                <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
                   <TabsTrigger
                     value="sentences"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
@@ -208,13 +197,6 @@ export default function GeneratorPage() {
                   >
                     <Type className="h-4 w-4 mr-2" />
                     Titelgenerator
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="closingPhrases"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Avslutningsfrasgenerator
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -234,18 +216,12 @@ export default function GeneratorPage() {
                   </div>
                 </div>
               </TabsContent>
-              <TabsContent value="closingPhrases" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <ClosingPhraseGenerator />
-                  </div>
-                </div>
-              </TabsContent>
             </Tabs>
           </motion.div>
         </div>
       </section>
 
+      {/* What It Is Section */}
       <section id="features-section" className="py-20 md:py-32 relative">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
@@ -262,11 +238,11 @@ export default function GeneratorPage() {
               Funktioner
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-              Vad är Textgeneratorn?
+              Vad är Meningsgeneratorn?
             </h2>
             <p className="text-slate-300 max-w-2xl mx-auto">
-              En icke-AI-driven textgenerator som skapar slumpmässiga svenska meningar och titlar för att inspirera till dikter,
-              berättelser och andra kreativa texter. Denna textgenerator är inte sammanhängande.
+              En kreativ textgenerator som skapar slumpmässiga svenska meningar för att inspirera till dikter,
+              berättelser och andra kreativa texter
             </p>
           </motion.div>
 
@@ -323,10 +299,10 @@ export default function GeneratorPage() {
           >
             <Button
               size="lg"
-              className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:[...]"
+              className="group bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 border-0 text-white px-8 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
               onClick={() => {
-                setShowGenerator(true);
-                document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" });
+                setShowGenerator(true)
+                document.getElementById("generator-section")?.scrollIntoView({ behavior: "smooth" })
               }}
             >
               Prova generatorn nu
@@ -372,17 +348,18 @@ export default function GeneratorPage() {
       {/* CSS för bakgrundsmönster */}
       <style jsx global>{`
         .bg-grid-pattern {
-          background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          background-image: 
+            linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
           background-size: 30px 30px;
         }
-
+        
         html {
           scroll-behavior: smooth;
         }
       `}</style>
     </div>
-  );
+  )
 }
 
 // Komponent för funktionskort
@@ -398,5 +375,6 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
         </CardContent>
       </Card>
     </motion.div>
-  );
+  )
 }
+
