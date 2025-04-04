@@ -25,9 +25,6 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-Certainly! Let's integrate the puter library dynamically into your React application and ensure everything works smoothly. Here's the full code with the necessary modifications:
-
-
 "use client"
 
 import { CardFooter } from "@/components/ui/card"
