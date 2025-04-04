@@ -4,12 +4,10 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import TextGenerator from "../modern-textarea"
-import TitleGenerator from "../components/title-generator"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowDown, Sparkles, Repeat, History, Brain, ChevronRight, Zap, Type, BookOpen } from "lucide-react"
+import { ArrowDown, Sparkles, Lightbulb, Repeat, History, Brain, ChevronRight, Star, Zap } from "lucide-react"
 import { motion } from "framer-motion"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // Framer Motion animationsvariant för fade-in
 const fadeIn = {
@@ -35,7 +33,6 @@ const staggerContainer = {
 export default function GeneratorPage() {
   const [showGenerator, setShowGenerator] = useState(false)
   const [scrollY, setScrollY] = useState(0)
-  const [activeGeneratorTab, setActiveGeneratorTab] = useState("sentences")
 
   // Lyssna på scroll för parallax-effekter
   useEffect(() => {
@@ -169,9 +166,12 @@ export default function GeneratorPage() {
               Kreativ inspiration
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-              Generera text
+              Generera meningar
             </h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">Skapa slumpmässiga svenska meningar med bara ett klick!</p>
+            <p className="text-slate-300 max-w-2xl mx-auto">
+              Skapa slumpmässiga svenska meningar med bara ett klick. Vår algoritm skapar sammanhängande text som kan
+              inspirera till dikter, berättelser och kreativt skrivande.
+            </p>
           </motion.div>
 
           <motion.div
@@ -181,42 +181,11 @@ export default function GeneratorPage() {
             transition={{ duration: 0.7 }}
             className="max-w-4xl mx-auto"
           >
-            <Tabs value={activeGeneratorTab} onValueChange={setActiveGeneratorTab} className="w-full mb-8">
-              <div className="flex justify-center">
-                <TabsList className="grid grid-cols-2 w-full max-w-md bg-white/5 backdrop-blur-md">
-                  <TabsTrigger
-                    value="sentences"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Meningsgenerator
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="titles"
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-white"
-                  >
-                    <Type className="h-4 w-4 mr-2" />
-                    Titelgenerator
-                  </TabsTrigger>
-                </TabsList>
+            <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
+              <div className="bg-slate-900 rounded-xl p-1">
+                <TextGenerator />
               </div>
-
-              <TabsContent value="sentences" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <TextGenerator />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="titles" className="mt-6">
-                <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl">
-                  <div className="bg-slate-900 rounded-xl p-1">
-                    <TitleGenerator />
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -278,13 +247,13 @@ export default function GeneratorPage() {
             />
 
             <FeatureCard
-              icon={<Type className="h-10 w-10 text-cyan-400" />}
-              title="Kreativ titelgenerator"
-              description="Genererar titlar för böcker, filmer eller blogginlägg baserat på ämnet och tonen du väljer. Skapar även catchiga slagord och kampanjnamn."
+              icon={<Lightbulb className="h-10 w-10 text-cyan-400" />}
+              title="Kreativ inspiration"
+              description="Perfekt för att övervinna skrivkramp, generera idéer till dikter och berättelser eller bara ha lite kul med slumpmässig text."
             />
 
             <FeatureCard
-              icon={<BookOpen className="h-10 w-10 text-cyan-400" />}
+              icon={<Star className="h-10 w-10 text-cyan-400" />}
               title="Anpassningsbar"
               description="Välj antal meningar och se hur generatorn skapar sammanhängande text med återanvända ord."
             />

@@ -1,11 +1,10 @@
 "use client"
 
-import { CardFooter } from "@/components/ui/card"
 import { useState, useEffect } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -53,27 +52,6 @@ interface HistoryItem {
 
 // Maxantal historikposter
 const MAX_HISTORY_ITEMS = 30
-
-const loadPuterScript = () => {
-  return new Promise((resolve, reject) => {
-    if (window.puter) {
-      resolve(window.puter);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://js.puter.com/v2/";
-    script.async = true;
-    script.onload = () => {
-      resolve(window.puter);
-    };
-    script.onerror = () => {
-      reject(new Error("Failed to load puter script"));
-    };
-
-    document.body.appendChild(script);
-  });
-};
 
 export default function TextGenerator() {
   const [generatedText, setGeneratedText] = useState("Klicka på knappen för att generera en mening")
@@ -342,131 +320,79 @@ export default function TextGenerator() {
     return allNouns.filter((noun) => lowerSentence.includes(noun))
   }
 
-  // Funktion för att generera flera meningar med Puter AI
+  // Funktion för att generera flera meningar med återanvändning av ord
   const generateText = () => {
     setIsGenerating(true)
 
-    // Skapa en prompt baserad på användarens inställningar
-    const prompt = `Generera ${sentenceCount} slumpmässiga svenska meningar som hänger ihop. 
-  Använd gärna ord som återkommer i flera meningar. 
-  Använd samma subjekt i början av meningarna med 50% sannolikhet.
-  Använd varierade meningsstrukturer för att skapa intressant text.
-  Svara endast med meningarna, utan någon annan text.`
+    // Simulera en kort laddningstid för bättre UX
+    setTimeout(() => {
+      const text = ""
+      const sentences: string[] = []
+      let usedKeywords: string[] = []
+      let lastUsedSubject: string | null = null
 
-    // Kontrollera om puter är tillgängligt
-    if (typeof window !== "undefined" && window.puter && window.puter.ai) {
-      window.puter.ai
-        .chat(prompt)
-        .then((response) => {
-          // Rensa bort eventuella extra rader eller punkter i slutet
-          const cleanedResponse = response.trim()
+      for (let i = 0; i < sentenceCount; i++) {
+        // För första meningen, generera helt slumpmässigt
+        if (i === 0) {
+          const firstSentence = generateRandomSentence([], null)
+          sentences.push(firstSentence)
 
-          const newTotal = totalGenerated + 1
-          const newItemId = generateId()
+          // Extrahera nyckelord från första meningen
+          usedKeywords = extractKeywords(firstSentence)
 
-          // Skapa ny historikpost
-          const newHistoryItem: HistoryItem = {
-            text: cleanedResponse,
-            timestamp: Date.now(),
-            id: newItemId,
+          // Spara det använda subjektet
+          const match = firstSentence.match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
+          if (match) {
+            lastUsedSubject = match[1]
           }
+        } else {
+          // För efterföljande meningar, använd nyckelord från tidigare meningar
+          // och ha 50% chans att återanvända samma subjekt
+          sentences.push(generateRandomSentence(usedKeywords, lastUsedSubject))
 
-          // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
-          const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
+          // Uppdatera nyckelord med nya från den senaste meningen
+          const newKeywords = extractKeywords(sentences[i])
+          usedKeywords = [...new Set([...usedKeywords, ...newKeywords])]
 
-          setGeneratedText(cleanedResponse)
-          setTotalGenerated(newTotal)
-          setHistory(newHistory)
-          setIsFavorite(favorites.includes(cleanedResponse))
-          setIsGenerating(false)
-
-          // Animera den nya historikposten
-          setAnimateHistoryItem(newItemId)
-          setTimeout(() => setAnimateHistoryItem(null), 1000)
-
-          // Spara i cookies
-          setCookie("totalGenerated", newTotal.toString())
-          setCookie("history", JSON.stringify(newHistory))
-
-          // Visa success-meddelande
-          showSuccessMessage("Text genererad!")
-        })
-        .catch((error) => {
-          console.error("Fel vid generering av text:", error)
-          setIsGenerating(false)
-          showSuccessMessage("Ett fel uppstod vid generering")
-        })
-    } else {
-      // Fallback om Puter inte är tillgängligt
-      setTimeout(() => {
-        const text = ""
-        const sentences: string[] = []
-        let usedKeywords: string[] = []
-        let lastUsedSubject: string | null = null
-
-        for (let i = 0; i < sentenceCount; i++) {
-          // För första meningen, generera helt slumpmässigt
-          if (i === 0) {
-            const firstSentence = generateRandomSentence([], null)
-            sentences.push(firstSentence)
-
-            // Extrahera nyckelord från första meningen
-            usedKeywords = extractKeywords(firstSentence)
-
-            // Spara det använda subjektet
-            const match = firstSentence.match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
-            if (match) {
-              lastUsedSubject = match[1]
-            }
-          } else {
-            // För efterföljande meningar, använd nyckelord från tidigare meningar
-            // och ha 50% chans att återanvända samma subjekt
-            sentences.push(generateRandomSentence(usedKeywords, lastUsedSubject))
-
-            // Uppdatera nyckelord med nya från den senaste meningen
-            const newKeywords = extractKeywords(sentences[i])
-            usedKeywords = [...new Set([...usedKeywords, ...newKeywords])]
-
-            // Uppdatera det senast använda subjektet
-            const match = sentences[i].match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
-            if (match) {
-              lastUsedSubject = match[1]
-            }
+          // Uppdatera det senast använda subjektet
+          const match = sentences[i].match(/^([A-ZÅÄÖ][a-zåäö]+(?:\s[a-zåäö]+)?)\s/)
+          if (match) {
+            lastUsedSubject = match[1]
           }
         }
+      }
 
-        const newText = sentences.join(" ")
-        const newTotal = totalGenerated + 1
-        const newItemId = generateId()
+      const newText = sentences.join(" ")
+      const newTotal = totalGenerated + 1
+      const newItemId = generateId()
 
-        // Skapa ny historikpost
-        const newHistoryItem: HistoryItem = {
-          text: newText,
-          timestamp: Date.now(),
-          id: newItemId,
-        }
+      // Skapa ny historikpost
+      const newHistoryItem: HistoryItem = {
+        text: newText,
+        timestamp: Date.now(),
+        id: newItemId,
+      }
 
-        // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
-        const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
+      // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
+      const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
 
-        setGeneratedText(newText)
-        setTotalGenerated(newTotal)
-        setHistory(newHistory)
-        setIsFavorite(favorites.includes(newText))
-        setIsGenerating(false)
+      setGeneratedText(newText)
+      setTotalGenerated(newTotal)
+      setHistory(newHistory)
+      setIsFavorite(favorites.includes(newText))
+      setIsGenerating(false)
 
-        // Animera den nya historikposten
-        setAnimateHistoryItem(newItemId)
-        setTimeout(() => setAnimateHistoryItem(null), 1000)
+      // Animera den nya historikposten
+      setAnimateHistoryItem(newItemId)
+      setTimeout(() => setAnimateHistoryItem(null), 1000)
 
-        // Spara i cookies
-        setCookie("totalGenerated", newTotal.toString())
-        setCookie("history", JSON.stringify(newHistory))
+      // Spara i cookies
+      setCookie("totalGenerated", newTotal.toString())
+      setCookie("history", JSON.stringify(newHistory))
 
-        // Visa success-meddelande
-        showSuccessMessage("Text genererad!")
-      }, 500)
-    }
+      // Visa success-meddelande
+      showSuccessMessage("Text genererad!")
+    }, 500)
   }
 
   // Funktion för att generera en slumpmässig svensk mening med möjlighet att återanvända ord
