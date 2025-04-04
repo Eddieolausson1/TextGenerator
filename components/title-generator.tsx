@@ -24,18 +24,6 @@ import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Deklarera Puter-typer för TypeScript
-declare global {
-  interface Window {
-    puter: {
-      ai: {
-        chat: (prompt: string) => Promise<string>
-      }
-      print: (text: string) => void
-    }
-  }
-}
-
 // Cookie-hanteringsfunktioner
 const setCookie = (name: string, value: string, days = 365) => {
   const expires = new Date()
@@ -370,148 +358,84 @@ export default function TitleGenerator() {
     return array[Math.floor(Math.random() * array.length)]
   }
 
-  // Funktion för att generera en titel med Puter AI
+  // Funktion för att generera en titel baserat på typ och ton
   const generateTitle = () => {
     setIsGenerating(true)
 
-    const userTopic = topic.trim() || "allmänt ämne"
+    // Simulera en kort laddningstid för bättre UX
+    setTimeout(() => {
+      let newTitle = ""
+      const userTopic =
+        topic.trim() || getRandomElement(["livet", "kärlek", "äventyr", "framgång", "natur", "teknologi"])
 
-    // Skapa en prompt baserad på användarens inställningar
-    let prompt = ""
+      // Välj adjektiv baserat på ton
+      const toneAdj = getRandomElement(toneAdjectives[tone as keyof typeof toneAdjectives] || toneAdjectives.neutral)
 
-    switch (titleType) {
-      case "book":
-        prompt = `Generera en kreativ boktitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
-        break
-      case "movie":
-        prompt = `Generera en fängslande filmtitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
-        break
-      case "blog":
-        prompt = `Generera en intresseväckande bloggtitel på svenska om ${userTopic} med en ${tone} ton. Svara endast med titeln, utan någon annan text.`
-        break
-      case "slogan":
-        prompt = `Generera ett catchy slagord eller kampanjnamn på svenska om ${userTopic} med en ${tone} ton. Svara endast med slagordet, utan någon annan text.`
-        break
-    }
-
-    // Kontrollera om puter är tillgängligt
-    if (typeof window !== "undefined" && window.puter && window.puter.ai) {
-      window.puter.ai
-        .chat(prompt)
-        .then((response) => {
-          // Rensa bort eventuella citattecken och extra rader
-          const cleanedResponse = response.trim().replace(/^["']|["']$/g, "")
-
-          const newTotal = totalGenerated + 1
-          const newItemId = generateId()
-
-          // Skapa ny historikpost
-          const newHistoryItem: HistoryItem = {
-            text: cleanedResponse,
-            timestamp: Date.now(),
-            id: newItemId,
-            type: titleType,
-            topic: userTopic,
-            tone: tone,
+      switch (titleType) {
+        case "book":
+          if (Math.random() > 0.5) {
+            newTitle = `${getRandomElement(bookPrefixes)} ${userTopic}`
+          } else {
+            newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}s ${getRandomElement(bookSuffixes)}`
           }
+          // Ibland lägg till ett adjektiv
+          if (Math.random() > 0.7) {
+            newTitle = `Den ${toneAdj}a ${newTitle.toLowerCase()}`
+          }
+          break
 
-          // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
-          const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
+        case "movie":
+          if (Math.random() > 0.5) {
+            newTitle = `${getRandomElement(moviePrefixes)} ${userTopic}`
+          } else {
+            newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}: ${getRandomElement(movieSuffixes)}`
+          }
+          break
 
-          setGeneratedTitle(cleanedResponse)
-          setTotalGenerated(newTotal)
-          setHistory(newHistory)
-          setIsFavorite(favorites.includes(cleanedResponse))
-          setIsGenerating(false)
+        case "blog":
+          newTitle = `${getRandomElement(blogPrefixes)} ${userTopic} ${getRandomElement(blogSuffixes)}`
+          break
 
-          // Animera den nya historikposten
-          setAnimateHistoryItem(newItemId)
-          setTimeout(() => setAnimateHistoryItem(null), 1000)
+        case "slogan":
+          newTitle = `${getRandomElement(sloganPrefixes)} ${userTopic}. ${getRandomElement(sloganSuffixes)}.`
+          // Gör första bokstaven stor
+          newTitle = newTitle.charAt(0).toUpperCase() + newTitle.slice(1)
+          break
+      }
 
-          // Spara i cookies
-          setCookie("titleTotalGenerated", newTotal.toString())
-          setCookie("titleHistory", JSON.stringify(newHistory))
+      const newTotal = totalGenerated + 1
+      const newItemId = generateId()
 
-          // Visa success-meddelande
-          showSuccessMessage("Titel genererad!")
-        })
-        .catch((error) => {
-          console.error("Fel vid generering av titel:", error)
-          setIsGenerating(false)
-          showSuccessMessage("Ett fel uppstod vid generering")
-        })
-    } else {
-      // Fallback om Puter inte är tillgängligt
-      setTimeout(() => {
-        let newTitle = ""
-        const toneAdj = getRandomElement(toneAdjectives[tone as keyof typeof toneAdjectives] || toneAdjectives.neutral)
+      // Skapa ny historikpost
+      const newHistoryItem: HistoryItem = {
+        text: newTitle,
+        timestamp: Date.now(),
+        id: newItemId,
+        type: titleType,
+        topic: userTopic,
+        tone: tone,
+      }
 
-        switch (titleType) {
-          case "book":
-            if (Math.random() > 0.5) {
-              newTitle = `${getRandomElement(bookPrefixes)} ${userTopic}`
-            } else {
-              newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}s ${getRandomElement(bookSuffixes)}`
-            }
-            // Ibland lägg till ett adjektiv
-            if (Math.random() > 0.7) {
-              newTitle = `Den ${toneAdj}a ${newTitle.toLowerCase()}`
-            }
-            break
+      // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
+      const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
 
-          case "movie":
-            if (Math.random() > 0.5) {
-              newTitle = `${getRandomElement(moviePrefixes)} ${userTopic}`
-            } else {
-              newTitle = `${userTopic.charAt(0).toUpperCase() + userTopic.slice(1)}: ${getRandomElement(movieSuffixes)}`
-            }
-            break
+      setGeneratedTitle(newTitle)
+      setTotalGenerated(newTotal)
+      setHistory(newHistory)
+      setIsFavorite(favorites.includes(newTitle))
+      setIsGenerating(false)
 
-          case "blog":
-            newTitle = `${getRandomElement(blogPrefixes)} ${userTopic} ${getRandomElement(blogSuffixes)}`
-            break
+      // Animera den nya historikposten
+      setAnimateHistoryItem(newItemId)
+      setTimeout(() => setAnimateHistoryItem(null), 1000)
 
-          case "slogan":
-            newTitle = `${getRandomElement(sloganPrefixes)} ${userTopic}. ${getRandomElement(sloganSuffixes)}.`
-            // Gör första bokstaven stor
-            newTitle = newTitle.charAt(0).toUpperCase() + newTitle.slice(1)
-            break
-        }
+      // Spara i cookies
+      setCookie("titleTotalGenerated", newTotal.toString())
+      setCookie("titleHistory", JSON.stringify(newHistory))
 
-        const newTotal = totalGenerated + 1
-        const newItemId = generateId()
-
-        // Skapa ny historikpost
-        const newHistoryItem: HistoryItem = {
-          text: newTitle,
-          timestamp: Date.now(),
-          id: newItemId,
-          type: titleType,
-          topic: userTopic,
-          tone: tone,
-        }
-
-        // Uppdatera historik (begränsa till MAX_HISTORY_ITEMS)
-        const newHistory = [newHistoryItem, ...history].slice(0, MAX_HISTORY_ITEMS)
-
-        setGeneratedTitle(newTitle)
-        setTotalGenerated(newTotal)
-        setHistory(newHistory)
-        setIsFavorite(favorites.includes(newTitle))
-        setIsGenerating(false)
-
-        // Animera den nya historikposten
-        setAnimateHistoryItem(newItemId)
-        setTimeout(() => setAnimateHistoryItem(null), 1000)
-
-        // Spara i cookies
-        setCookie("titleTotalGenerated", newTotal.toString())
-        setCookie("titleHistory", JSON.stringify(newHistory))
-
-        // Visa success-meddelande
-        showSuccessMessage("Titel genererad!")
-      }, 500)
-    }
+      // Visa success-meddelande
+      showSuccessMessage("Titel genererad!")
+    }, 500)
   }
 
   // Funktion för att formatera datum
